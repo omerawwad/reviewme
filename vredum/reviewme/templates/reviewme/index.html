@@ -1,14 +1,14 @@
 {% extends 'reviewme/layout.html' %} {% block body %}
 <h1>Welcome To Review Me</h1>
 
-<form method="post" action="{% url 'add_review' %}">
+<form method="post" action="{% url 'add_answer' %}">
   {% csrf_token %}
   <div class="form-group">
     <label for="item_id">Item</label>
     <input
       type="text"
       class="form-control"
-      name="item_id"
+      name="question_id"
       placeholder="Enter item ID"
       required
     />
@@ -18,7 +18,7 @@
     <input
       type="text"
       class="form-control"
-      name="review_title"
+      name="answer_text"
       placeholder="Enter item name"
     />
   </div>

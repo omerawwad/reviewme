@@ -74,7 +74,7 @@ def question(request, question_id):
     return JsonResponse(result, safe=False)
 
 # Private APIs ( create_item -> Create Item, update_item -> Update Item, delete_item -> Delete Item )
-@csrf_exempt
+
 @login_required
 def item(request):
     # if request.method == 'GET':
@@ -125,7 +125,6 @@ def item(request):
     
 
 @login_required
-@csrf_exempt
 def add_tag(request):
     if request.method != 'POST':
         return JsonResponse({'error': 'Invalid request method'}, status=405)
@@ -169,7 +168,7 @@ def add_tag(request):
         return JsonResponse({'error': 'Item does not exist'}, status=400)
     return JsonResponse({'message': 'Request done successfully', 'warning': warning}, status=200)
 
-
+@login_required
 def add_review(request):
     if request.method != 'POST':
         return JsonResponse({'error': 'Invalid request method'}, status=405)
@@ -220,3 +219,64 @@ def add_review(request):
 
     return JsonResponse(result.serialize(), safe=False)
     
+
+@login_required
+def add_question(request):
+    if request.method != 'POST':
+        return JsonResponse({'error': 'Invalid request method'}, status=405)
+    
+    # Check if the user is authenticated
+    if not request.user.is_authenticated:
+        return JsonResponse({'error': 'User not authenticated'}, status=401)
+    
+    # Get the data from the request
+    data = request.POST
+    user = request.user
+    user_id = user.id
+    item_id = data.get('item_id')
+    text = data.get('question_text')
+    # Validate the input
+    if not item_id or not user_id:
+        return JsonResponse({'error': 'Item id and user are required'}, status=400)
+    
+    if conversion.check_item_id(item_id) == False:
+        return JsonResponse({'error': 'Item does not exist'}, status=400)
+    
+    # Add the review to the item
+    response, result = dbcomm.create_question(item_id=int(item_id), user_id=user_id, text=text)
+    
+    if not response:
+        return JsonResponse({'error': 'Item does not exist'}, status=400)
+
+    return JsonResponse(result.serialize(), safe=False)
+
+
+@login_required
+def add_answer(request):
+    if request.method != 'POST':
+        return JsonResponse({'error': 'Invalid request method'}, status=405)
+    
+    # Check if the user is authenticated
+    if not request.user.is_authenticated:
+        return JsonResponse({'error': 'User not authenticated'}, status=401)
+    
+    # Get the data from the request
+    data = request.POST
+    user = request.user
+    user_id = user.id
+    question_id = data.get('question_id')
+    text = data.get('answer_text')
+    # Validate the input
+    if not question_id or not user_id:
+        return JsonResponse({'error': 'Question id and user are required'}, status=400)
+    
+    if conversion.check_item_id(question_id) == False:
+        return JsonResponse({'error': 'Question does not exist'}, status=400)
+    
+    # Add the review to the item
+    response, result = dbcomm.create_answer(question_id=int(question_id), user_id=user_id, text=text)
+    
+    if not response:
+        return JsonResponse({'error': 'Question does not exist'}, status=400)
+
+    return JsonResponse(result.serialize(), safe=False)

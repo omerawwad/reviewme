@@ -1,3 +1,4 @@
+from calendar import c
 from .authorization import check_same_user
 from ..models import Review, Tag, Link, Media, Item, Question, Answer
 
@@ -265,3 +266,29 @@ def create_review(item_id, user_id, rating, title, description):
     print(f"Review '{title}' created.")
     
     return True, review
+
+def create_question(item_id, user_id, text):
+    try:
+        item = Item.objects.get(id=item_id)
+    except Item.DoesNotExist:
+        print(f"Item with id {item_id} does not exist.")
+        return False, {}
+    
+    question = Question(item=item, created_by_id=user_id, text=text)
+    question.save()
+    print(f"Question '{text}' created.")
+    
+    return True, question
+
+def create_answer(question_id, user_id, text):
+    try:
+        question = Question.objects.get(id=question_id)
+    except Question.DoesNotExist:
+        print(f"Question with id {question_id} does not exist.")
+        return False, {}
+    
+    answer = Answer(question=question, created_by_id=user_id, text=text)
+    answer.save()
+    print(f"Answer '{text}' created.")
+    
+    return True, answer;

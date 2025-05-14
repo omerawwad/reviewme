@@ -140,6 +140,7 @@ class Question(models.Model):
     
     def serialize(self):
         return {
+            'item_id': self.item.id,
             'text': self.text,
             'created_at': self.created_at,
             'created_by': self.created_by.username,
@@ -158,9 +159,11 @@ class Answer(models.Model):
     
     def serialize(self):
         return {
+            'question': self.question_id,
             'text': self.text,
             'created_at': self.created_at,
             'created_by': self.created_by.username,
+            'likes': self.likes.count(),
         }
     
 

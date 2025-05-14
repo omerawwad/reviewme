@@ -309,6 +309,35 @@ def get_user_reviews(user_id, page=1, page_size=10):
     reviews = Review.objects.filter(user_id=user_id)[start:end]
     return True, {"reviews": [review.serialize() for review in reviews], "page": page, "page_size": page_size, "num_pages": num_pages}
 
+def get_user_questions(user_id, page=1, page_size=10):
+    # pagination
+    start = (page - 1) * page_size
+    
+    if start < 0 or start >= len(Question.objects.filter(created_by_id=user_id)):
+        # print(f"Invalid page number: {page}. Page size: {page_size}.")
+        return False, {}
+    
+    end = len(Question.objects.filter(created_by_id=user_id)) if page * page_size > len(Question.objects.filter(created_by_id=user_id)) else page * page_size
+
+    num_pages = len(Question.objects.filter(created_by_id=user_id)) // page_size + (1 if len(Question.objects.filter(created_by_id=user_id)) % page_size > 0 else 0)
+
+    questions = Question.objects.filter(created_by_id=user_id)[start:end]
+    return True, {"questions": [question.serialize() for question in questions], "page": page, "page_size": page_size, "num_pages": num_pages}
+
+def get_user_answers(user_id, page=1, page_size=10):
+    # pagination
+    start = (page - 1) * page_size
+    
+    if start < 0 or start >= len(Answer.objects.filter(created_by_id=user_id)):
+        # print(f"Invalid page number: {page}. Page size: {page_size}.")
+        return False, {}
+    
+    end = len(Answer.objects.filter(created_by_id=user_id)) if page * page_size > len(Answer.objects.filter(created_by_id=user_id)) else page * page_size
+
+    num_pages = len(Answer.objects.filter(created_by_id=user_id)) // page_size + (1 if len(Answer.objects.filter(created_by_id=user_id)) % page_size > 0 else 0)
+
+    answers = Answer.objects.filter(created_by_id=user_id)[start:end]
+    return True, {"answers": [answer.serialize() for answer in answers], "page": page, "page_size": page_size, "num_pages": num_pages}
 
 def like_review(review_id, user_id):
     try:

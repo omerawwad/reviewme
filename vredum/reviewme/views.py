@@ -345,6 +345,60 @@ def get_user_reviews(request):
 
     return JsonResponse({"result": result, "user": user.username}, safe=False)
 
+def get_user_questions(request):
+    if request.method != 'GET':
+        return JsonResponse({'error': 'Invalid request method'}, status=405)
+    
+    # Check if the user is authenticated
+    if not request.user.is_authenticated:
+        return JsonResponse({'error': 'User not authenticated'}, status=401)
+    
+    user = request.user
+    user_id = user.id
+    
+    # Get the data from the request
+    data = request.POST
+    item_id = data.get('item_id')
+    
+    # Validate the input
+    if not user_id:
+        return JsonResponse({'error': 'Item id and user are required'}, status=400)
+    
+    # Add the review to the item
+    response, result = dbcomm.get_user_questions(user_id=user_id)
+    
+    if not response:
+        return JsonResponse({'error': 'Item does not exist'}, status=400)
+
+    return JsonResponse({"result": result, "user": user.username}, safe=False)
+
+def get_user_answers(request):
+    if request.method != 'GET':
+        return JsonResponse({'error': 'Invalid request method'}, status=405)
+    
+    # Check if the user is authenticated
+    if not request.user.is_authenticated:
+        return JsonResponse({'error': 'User not authenticated'}, status=401)
+    
+    user = request.user
+    user_id = user.id
+    
+    # Get the data from the request
+    data = request.POST
+    item_id = data.get('item_id')
+    
+    # Validate the input
+    if not user_id:
+        return JsonResponse({'error': 'Item id and user are required'}, status=400)
+    
+    # Add the review to the item
+    response, result = dbcomm.get_user_answers(user_id=user_id)
+    
+    if not response:
+        return JsonResponse({'error': 'Item does not exist'}, status=400)
+
+    return JsonResponse({"result": result, "user": user.username}, safe=False)
+
 @login_required
 def like_review(request):
     if request.method != 'POST':
@@ -453,4 +507,6 @@ def like_answer(request):
     if not response:
         return JsonResponse(result, status=400)
     return JsonResponse(result.serialize(), safe=False)
+
+
     

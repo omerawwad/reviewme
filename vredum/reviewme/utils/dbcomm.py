@@ -291,4 +291,19 @@ def create_answer(question_id, user_id, text):
     answer.save()
     print(f"Answer '{text}' created.")
     
-    return True, answer;
+    return True, answer
+
+def get_user_reviews(user_id, page=1, page_size=10):
+    # pagination
+    start = (page - 1) * page_size
+    
+    if start < 0 or start >= len(Review.objects.filter(user_id=user_id)):
+        # print(f"Invalid page number: {page}. Page size: {page_size}.")
+        return False, {}
+    
+    end = len(Review.objects.filter(user_id=user_id)) if page * page_size > len(Review.objects.filter(user_id=user_id)) else page * page_size
+
+    num_pages = len(Review.objects.filter(user_id=user_id)) // page_size + (1 if len(Review.objects.filter(user_id=user_id)) % page_size > 0 else 0)
+
+    reviews = Review.objects.filter(user_id=user_id)[start:end]
+    return True, {"reviews": [review.serialize() for review in reviews], "page": page, "page_size": page_size, "num_pages": num_pages}

@@ -4,6 +4,7 @@ from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
 from numpy import empty
+from pygments import highlight
 
 
 
@@ -50,6 +51,39 @@ def get_item(request, item_id):
         return JsonResponse({'error': 'Item Does Not Exist'}, status=400)
 
     return JsonResponse(result, safe=False)
+
+
+def get_item_with_hl(request):
+    if request.method != 'GET':
+        return JsonResponse({'error': 'Invalid request method'}, status=405)
+    
+    highlighted_review = request.GET.get('highlighted_review', None)
+    highlighted_question = request.GET.get('highlighted_question', None)
+    
+    if highlighted_review:
+        try:
+            review_id = int(highlighted_review)
+        except ValueError:
+            return JsonResponse({'error': 'Invalid review ID'}, status=400)
+        
+        response, result = dbcomm.get_item_with_hl_review(review_id=review_id)
+        
+        if not response:
+            return JsonResponse({'error': 'Review Does Not Exist'}, status=400)
+        return JsonResponse(result, safe=False)
+    
+   
+    if highlighted_question:
+        try:
+            question_id = int(highlighted_question)
+        except ValueError:
+            return JsonResponse({'error': 'Invalid question ID'}, status=400)
+
+        response, result = dbcomm.get_item_with_hl_question(question_id=question_id)
+        
+        if not response:
+            return JsonResponse({'error': 'Question Does Not Exist'}, status=400)
+        return JsonResponse(result, safe=False)
 
 def review(request, review_id):
     if request.method != 'GET':

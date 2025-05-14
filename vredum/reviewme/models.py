@@ -39,6 +39,7 @@ class Item(models.Model):
             'media': [media.url for media in self.media.all()],
             'questions': [question.serialize() for question in self.questions.all()],
             'review_count': self.reviews.count(),
+            'average_rating': self.get_average_rating(),
         }
     
     def brief(self):
@@ -72,6 +73,13 @@ class Item(models.Model):
     
     def get_media(self):
         return self.media.all()    
+    
+    def get_average_rating(self):
+        reviews = self.reviews.all()
+        if reviews:
+            total_rating = sum(review.get_rating() for review in reviews)
+            return total_rating / len(reviews)
+        return 0
 
 class Review(models.Model):
     # rating = models.IntegerField() # making it maximum 5
@@ -153,5 +161,66 @@ class Answer(models.Model):
             'text': self.text,
             'created_at': self.created_at,
             'created_by': self.created_by.username,
+        }
+    
+
+class ReviewLike(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='review_likes')
+    review = models.ForeignKey(Review, on_delete=models.CASCADE, related_name='likes')
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.user.username} liked {self.review.title}"
+    
+    class Meta:
+        unique_together = ('user', 'review')
+        verbose_name = 'Review Like'
+        verbose_name_plural = 'Review Likes'
+    
+    def serialize(self):
+        return {
+            'user': self.user.username,
+            'review': self.review.title,
+            'created_at': self.created_at,
+        }
+    
+class QuestionUpvote(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='question_upvotes')
+    question = models.ForeignKey(Question, on_delete=models.CASCADE, related_name='upvotes')
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.user.username} upvoted {self.question.text}"
+    
+    class Meta:
+        unique_together = ('user', 'question')
+        verbose_name = 'Question Upvote'
+        verbose_name_plural = 'Question Upvotes'
+    
+    def serialize(self):
+        return {
+            'user': self.user.username,
+            'question': self.question.text,
+            'created_at': self.created_at,
+        }
+    
+class AnswerLike(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='answer_likes')
+    answer = models.ForeignKey(Answer, on_delete=models.CASCADE, related_name='likes')
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.user.username} liked {self.answer.text}"
+    
+    class Meta:
+        unique_together = ('user', 'answer')
+        verbose_name = 'Answer Like'
+        verbose_name_plural = 'Answer Likes'
+    
+    def serialize(self):
+        return {
+            'user': self.user.username,
+            'answer': self.answer.text,
+            'created_at': self.created_at,
         }
     

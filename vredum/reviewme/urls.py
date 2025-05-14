@@ -14,4 +14,7 @@ urlpatterns = [
     path("add/question", views.add_question, name='add_question'),
     path("add/answer", views.add_answer, name='add_answer'),
     path("user/reviews", views.get_user_reviews, name='user_reviews'),
+    path("like/review", views.like_review, name='like_review'),
+    path("upvote/question", views.upvote_question, name='upvote_question'),
+    path("like/answer", views.like_answer, name='like_answer'),
 ]

@@ -1,6 +1,7 @@
 from calendar import c
+import re
 from .authorization import check_same_user
-from ..models import Review, Tag, Link, Media, Item, Question, Answer
+from ..models import Review, Tag, Link, Media, Item, Question, Answer, ReviewLike, QuestionUpvote, AnswerLike
 
 def get_item_by_id(item_id):
     try:
@@ -307,3 +308,55 @@ def get_user_reviews(user_id, page=1, page_size=10):
 
     reviews = Review.objects.filter(user_id=user_id)[start:end]
     return True, {"reviews": [review.serialize() for review in reviews], "page": page, "page_size": page_size, "num_pages": num_pages}
+
+
+def like_review(review_id, user_id):
+    try:
+        review = Review.objects.get(id=review_id)
+        print(f"Review: {review}")
+    except Review.DoesNotExist:
+        print(f"Review with id {review_id} does not exist.")
+        return False, {}
+    try:
+        like = ReviewLike(user_id=user_id, review_id=review_id)
+        like.save()
+        print(f"User {user_id} liked review '{review.title}'.")
+    except Exception as e:
+        # print(f"Error liking review: {e}")
+        return False, {"errorDuplicateLike": "Like already exists."}
+    
+    return True, like
+
+def upvote_question(question_id, user_id):
+    try:
+        question = Question.objects.get(id=question_id)
+    except Question.DoesNotExist:
+        print(f"Question with id {question_id} does not exist.")
+        return False, {}
+    
+    try:
+        upvote = QuestionUpvote(user_id=user_id, question_id=question_id)
+        upvote.save()
+        print(f"User {user_id} upvoted question '{question.text}'.")
+    except Exception as e:
+        # print(f"Error upvoting question: {e}")
+        return False, {'errorDuplicateUpvote': "Upvote already exists."}
+    
+    return True, upvote
+
+def like_answer(answer_id, user_id):
+    try:
+        answer = Answer.objects.get(id=answer_id)
+    except Answer.DoesNotExist:
+        print(f"Answer with id {answer_id} does not exist.")
+        return False, {}
+    
+    try:
+        like = AnswerLike(user_id=user_id, answer_id=answer_id)
+        like.save()
+        print(f"User {user_id} liked answer '{answer.text}'.")
+    except Exception as e:
+        # print(f"Error liking answer: {e}")
+        return False, {'errorDuplicateLike': "Like already exists."}
+    
+    return True, like

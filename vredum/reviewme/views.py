@@ -1,3 +1,5 @@
+from calendar import c
+import json
 from urllib import response
 from django.http import JsonResponse
 from django.shortcuts import render
@@ -342,3 +344,113 @@ def get_user_reviews(request):
         return JsonResponse({'error': 'Item does not exist'}, status=400)
 
     return JsonResponse({"result": result, "user": user.username}, safe=False)
+
+@login_required
+def like_review(request):
+    if request.method != 'POST':
+        return JsonResponse({'error': 'Invalid request method'}, status=405)
+    
+    # Check if the user is authenticated
+    if not request.user.is_authenticated:
+        return JsonResponse({'error': 'User not authenticated'}, status=401)
+    
+    # Get the data from the request
+    data = request.POST
+    user = request.user
+    user_id = user.id
+    review_id = data.get('review_id')
+
+    if not review_id:
+        return JsonResponse({'error': 'Review id is required'}, status=400)
+
+    try:
+        review_id = int(review_id)
+    except ValueError:
+        return JsonResponse({'error': 'Invalid review ID'}, status=400)
+
+    # Validate the input
+    if not review_id or not user_id:
+        return JsonResponse({'error': 'Review id and user are required'}, status=400)
+    
+    print(f"Review ID: {review_id}")
+    # Add the review to the item
+    response, result = dbcomm.like_review(review_id=int(review_id), user_id=user_id)
+    print(result)
+    
+    if not response:
+        return JsonResponse(result, status=400)
+
+    return JsonResponse(result.serialize(), safe=False)
+
+@login_required
+def upvote_question(request):
+    if request.method != 'POST':
+        return JsonResponse({'error': 'Invalid request method'}, status=405)
+    
+    # Check if the user is authenticated
+    if not request.user.is_authenticated:
+        return JsonResponse({'error': 'User not authenticated'}, status=401)
+    
+    # Get the data from the request
+    data = request.POST
+    user = request.user
+    user_id = user.id
+    question_id = data.get('question_id')
+    # print(f"Question ID: {question_id}
+
+    if not question_id:
+        return JsonResponse({'error': 'Question id is required'}, status=400)
+    try:
+        question_id = int(question_id)
+    except ValueError:
+        return JsonResponse({'error': 'Invalid question ID'}, status=400)
+
+    # Validate the input
+    if not question_id or not user_id:
+        return JsonResponse({'error': 'Question id and user are required'}, status=400)
+    
+    print(f"Question ID: {question_id}")
+    # Add the review to the item
+    response, result = dbcomm.upvote_question(question_id=question_id, user_id=user_id)
+    print(result)
+    
+    if not response:
+        return JsonResponse(result, status=400)
+
+    return JsonResponse(result.serialize(), safe=False)
+
+@login_required
+def like_answer(request):
+    if request.method != 'POST':
+        return JsonResponse({'error': 'Invalid request method'}, status=405)
+    
+    # Check if the user is authenticated
+    if not request.user.is_authenticated:
+        return JsonResponse({'error': 'User not authenticated'}, status=401)
+    
+    # Get the data from the request
+    data = request.POST
+    user = request.user
+    user_id = user.id
+    answer_id = data.get('answer_id')
+
+    if not answer_id:
+        return JsonResponse({'error': 'Answer id is required'}, status=400)
+
+    try:
+        answer_id = int(answer_id)
+    except ValueError:
+        return JsonResponse({'error': 'Invalid answer ID'}, status=400)
+
+    # Validate the input
+    if not answer_id or not user_id:
+        return JsonResponse({'error': 'Answer id and user are required'}, status=400)
+    
+    print(f"Answer ID: {answer_id}")
+    # Add the review to the item
+    response, result = dbcomm.like_answer(answer_id=answer_id, user_id=user_id)
+    # print(result)
+    if not response:
+        return JsonResponse(result, status=400)
+    return JsonResponse(result.serialize(), safe=False)
+    

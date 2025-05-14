@@ -1,6 +1,5 @@
 from django.contrib import admin
-from .models import Review, Item, User, Tag, Link, Media, Question, Answer
-from django.contrib.auth.models import User as AuthUser
+from .models import AnswerLike, Review, Item, User, Tag, Link, Media, Question, Answer, ReviewLike, QuestionUpvote
 
 # Register your models here.
 
@@ -12,3 +11,6 @@ admin.site.register(Link)
 admin.site.register(Media)
 admin.site.register(Question)
 admin.site.register(Answer)
+admin.site.register(ReviewLike)
+admin.site.register(QuestionUpvote)
+admin.site.register(AnswerLike)

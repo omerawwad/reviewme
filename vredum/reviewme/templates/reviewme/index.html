@@ -1,7 +1,7 @@
 {% extends 'reviewme/layout.html' %} {% block body %}
 <h1>Welcome To Review Me</h1>
 
-<form method="post" action="{% url 'like_answer' %}">
+<!-- <form method="post" action="{% url 'like_answer' %}">
   {% csrf_token %}
   <div class="form-group">
     <label for="item_id">Item</label>
@@ -10,7 +10,7 @@
       class="form-control"
       name="answer_id"
       placeholder="Enter item ID"
-      required
+      
     />
   </div>
   <div class="form-group">
@@ -76,6 +76,48 @@
             placeholder="Enter item type">
         </select>
   <button type="submit" class="btn btn-primary">Submit</button>
-</form>
+</form> -->
+
+<input type="text" class="form-control" name="id" placeholder="Enter ID" />
+<input type="text" class="form-control" name="title" placeholder="title" />
+<input
+  type="text"
+  class="form-control"
+  name="description"
+  placeholder="description"
+/>
+<button type="submit" class="btn btn-primary" id="do">Do action</button>
+
+<script>
+  document.getElementById("do").addEventListener("click", function () {
+    const id = document.querySelector('input[name="id"]').value;
+    const title = document.querySelector('input[name="title"]').value;
+    const description = document.querySelector(
+      'input[name="description"]'
+    ).value;
+    console.log(id);
+    fetch("{% url 'edit_item' %}", {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        "X-CSRFToken": "{{ csrf_token }}",
+      },
+      body: JSON.stringify({
+        item_id: id,
+        name: title,
+        description: description,
+      }),
+    }).then((response) => {
+      if (!response.ok) {
+        return response.json().then((error) => {
+          console.error("Error:", error);
+        });
+      }
+      return response.json().then((data) => {
+        console.log("Success:", data);
+      });
+    });
+  });
+</script>
 
 {% endblock %}

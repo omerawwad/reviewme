@@ -1,5 +1,6 @@
 from calendar import c
 import json
+from os import name
 from urllib import response
 from django.http import JsonResponse
 from django.shortcuts import render
@@ -124,7 +125,11 @@ def item(request):
     user_id = user.id
     
     # Get the data from the request
-    data = request.POST
+     # Get the data from the request
+    try:
+        data = json.loads(request.body)
+    except json.JSONDecodeError:
+        return JsonResponse({'error': 'Invalid JSON'}, status=400)
     name = data.get('name')
     description = data.get('description')
     tags = data.getlist('tags')
@@ -174,7 +179,11 @@ def add_tag(request):
     user_id = user.id
     
     # Get the data from the request
-    data = request.POST
+     # Get the data from the request
+    try:
+        data = json.loads(request.body)
+    except json.JSONDecodeError:
+        return JsonResponse({'error': 'Invalid JSON'}, status=400)
     tags = data.getlist('tags')
     item_id = data.get('item_id')
     
@@ -216,7 +225,11 @@ def add_review(request):
     rating = 0
 
     # Get the data from the request
-    data = request.POST
+     # Get the data from the request
+    try:
+        data = json.loads(request.body)
+    except json.JSONDecodeError:
+        return JsonResponse({'error': 'Invalid JSON'}, status=400)
     user = request.user
     user_id = user.id
     item_id = data.get('item_id')
@@ -266,7 +279,11 @@ def add_question(request):
         return JsonResponse({'error': 'User not authenticated'}, status=401)
     
     # Get the data from the request
-    data = request.POST
+     # Get the data from the request
+    try:
+        data = json.loads(request.body)
+    except json.JSONDecodeError:
+        return JsonResponse({'error': 'Invalid JSON'}, status=400)
     user = request.user
     user_id = user.id
     item_id = data.get('item_id')
@@ -297,7 +314,11 @@ def add_answer(request):
         return JsonResponse({'error': 'User not authenticated'}, status=401)
     
     # Get the data from the request
-    data = request.POST
+     # Get the data from the request
+    try:
+        data = json.loads(request.body)
+    except json.JSONDecodeError:
+        return JsonResponse({'error': 'Invalid JSON'}, status=400)
     user = request.user
     user_id = user.id
     question_id = data.get('question_id')
@@ -330,7 +351,11 @@ def get_user_reviews(request):
     user_id = user.id
     
     # Get the data from the request
-    data = request.POST
+     # Get the data from the request
+    try:
+        data = json.loads(request.body)
+    except json.JSONDecodeError:
+        return JsonResponse({'error': 'Invalid JSON'}, status=400)
     item_id = data.get('item_id')
     
     # Validate the input
@@ -357,7 +382,11 @@ def get_user_questions(request):
     user_id = user.id
     
     # Get the data from the request
-    data = request.POST
+     # Get the data from the request
+    try:
+        data = json.loads(request.body)
+    except json.JSONDecodeError:
+        return JsonResponse({'error': 'Invalid JSON'}, status=400)
     item_id = data.get('item_id')
     
     # Validate the input
@@ -384,7 +413,11 @@ def get_user_answers(request):
     user_id = user.id
     
     # Get the data from the request
-    data = request.POST
+     # Get the data from the request
+    try:
+        data = json.loads(request.body)
+    except json.JSONDecodeError:
+        return JsonResponse({'error': 'Invalid JSON'}, status=400)
     item_id = data.get('item_id')
     
     # Validate the input
@@ -409,7 +442,11 @@ def like_review(request):
         return JsonResponse({'error': 'User not authenticated'}, status=401)
     
     # Get the data from the request
-    data = request.POST
+     # Get the data from the request
+    try:
+        data = json.loads(request.body)
+    except json.JSONDecodeError:
+        return JsonResponse({'error': 'Invalid JSON'}, status=400)
     user = request.user
     user_id = user.id
     review_id = data.get('review_id')
@@ -446,7 +483,11 @@ def upvote_question(request):
         return JsonResponse({'error': 'User not authenticated'}, status=401)
     
     # Get the data from the request
-    data = request.POST
+    try:
+        data = json.loads(request.body)
+    except json.JSONDecodeError:
+        return JsonResponse({'error': 'Invalid JSON'}, status=400)
+
     user = request.user
     user_id = user.id
     question_id = data.get('question_id')
@@ -483,7 +524,11 @@ def like_answer(request):
         return JsonResponse({'error': 'User not authenticated'}, status=401)
     
     # Get the data from the request
-    data = request.POST
+     # Get the data from the request
+    try:
+        data = json.loads(request.body)
+    except json.JSONDecodeError:
+        return JsonResponse({'error': 'Invalid JSON'}, status=400)
     user = request.user
     user_id = user.id
     answer_id = data.get('answer_id')
@@ -508,5 +553,79 @@ def like_answer(request):
         return JsonResponse(result, status=400)
     return JsonResponse(result.serialize(), safe=False)
 
+@login_required
+def edit_item(request):
+    if request.method != 'PUT':
+        return JsonResponse({'error': 'Invalid request method'}, status=405)
+    
+    # Check if the user is authenticated
+    if not request.user.is_authenticated:
+        return JsonResponse({'error': 'User not authenticated'}, status=401)
+    
+    # Get the data from the request
+     # Get the data from the request
+    try:
+        data = json.loads(request.body)
+    except json.JSONDecodeError:
+        return JsonResponse({'error': 'Invalid JSON'}, status=400)
+    user = request.user
+    user_id = user.id
+    item_id = data.get('item_id')
+    name = data.get('name')
+    description = data.get('description')
+
 
     
+    # Validate the input
+    if not item_id or not user_id:
+        return JsonResponse({'error': 'Item id and user are required'}, status=400)
+    
+    try:
+        item_id = int(item_id)
+    except ValueError:
+        return JsonResponse({'error': 'Invalid item ID'}, status=400)
+    
+    # Add the review to the item
+    response, result = dbcomm.edit_item(item_id=item_id, user_id=user_id, name=name, description=description)
+    
+    if not response:
+        return JsonResponse(result, status=400)
+
+    return JsonResponse(result.serialize(), safe=False)
+
+
+@login_required
+def delete_item(request):
+    if request.method != 'DELETE':
+        return JsonResponse({'error': 'Invalid request method'}, status=405)
+    
+    # Check if the user is authenticated
+    if not request.user.is_authenticated:
+        return JsonResponse({'error': 'User not authenticated'}, status=401)
+    
+    # Get the data from the request
+     # Get the data from the request
+    try:
+        data = json.loads(request.body)
+    except json.JSONDecodeError:
+        return JsonResponse({'error': 'Invalid JSON'}, status=400)
+    user = request.user
+    user_id = user.id
+    item_id = data.get('item_id')
+    
+    # Validate the input
+    if not item_id or not user_id:
+        return JsonResponse({'error': 'Item id and user are required'}, status=400)
+    
+    try:
+        item_id = int(item_id)
+    except ValueError:
+        return JsonResponse({'error': 'Invalid item ID'}, status=400)
+    
+    # Add the review to the item
+    response, result = dbcomm.delete_item(item_id=item_id, user_id=user_id)
+    
+    if not response:
+        return JsonResponse(result, status=400)
+
+    return JsonResponse(result.serialize(), safe=False)

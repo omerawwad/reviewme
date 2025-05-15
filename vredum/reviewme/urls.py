@@ -19,4 +19,5 @@ urlpatterns = [
     path("like/review", views.like_review, name='like_review'),
     path("upvote/question", views.upvote_question, name='upvote_question'),
     path("like/answer", views.like_answer, name='like_answer'),
+    path("edit/item", views.edit_item, name='edit_item'),
 ]

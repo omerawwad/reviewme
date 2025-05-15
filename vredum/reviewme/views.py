@@ -1,4 +1,5 @@
 from calendar import c
+from email import message
 import json
 from os import name
 from urllib import response
@@ -628,4 +629,115 @@ def delete_item(request):
     if not response:
         return JsonResponse(result, status=400)
 
-    return JsonResponse(result.serialize(), safe=False)
+    return JsonResponse({"message":"Item deleted successfully"}, safe=False)
+
+@login_required
+def delete_review(request):
+    if request.method != 'DELETE':
+        return JsonResponse({'error': 'Invalid request method'}, status=405)
+    
+    # Check if the user is authenticated
+    if not request.user.is_authenticated:
+        return JsonResponse({'error': 'User not authenticated'}, status=401)
+    
+    # Get the data from the request
+     # Get the data from the request
+    try:
+        data = json.loads(request.body)
+    except json.JSONDecodeError:
+        return JsonResponse({'error': 'Invalid JSON'}, status=400)
+    user = request.user
+    user_id = user.id
+    review_id = data.get('review_id')
+    
+    # Validate the input
+    if not review_id or not user_id:
+        return JsonResponse({'error': 'Review id and user are required'}, status=400)
+    
+    try:
+        review_id = int(review_id)
+    except ValueError:
+        return JsonResponse({'error': 'Invalid review ID'}, status=400)
+    
+    # Add the review to the item
+    response, result = dbcomm.delete_review(review_id=review_id, user_id=user_id)
+    
+    if not response:
+        return JsonResponse(result, status=400)
+
+    return JsonResponse(result, safe=False)
+
+@login_required
+def delete_question(request):
+    if request.method != 'DELETE':
+        return JsonResponse({'error': 'Invalid request method'}, status=405)
+    
+    # Check if the user is authenticated
+    if not request.user.is_authenticated:
+        return JsonResponse({'error': 'User not authenticated'}, status=401)
+    
+    # Get the data from the request
+     # Get the data from the request
+    try:
+        data = json.loads(request.body)
+    except json.JSONDecodeError:
+        return JsonResponse({'error': 'Invalid JSON'}, status=400)
+    user = request.user
+    user_id = user.id
+    question_id = data.get('question_id')
+    
+    # Validate the input
+    if not question_id or not user_id:
+        return JsonResponse({'error': 'Question id and user are required'}, status=400)
+    
+    try:
+        question_id = int(question_id)
+    except ValueError:
+        return JsonResponse({'error': 'Invalid question ID'}, status=400)
+    
+    # Add the review to the item
+    response, result = dbcomm.delete_question(question_id=question_id, user_id=user_id)
+    
+    if not response:
+        return JsonResponse(result, status=400)
+
+    return JsonResponse(result, safe=False)
+
+@login_required
+def delete_answer(request):
+    if request.method != 'DELETE':
+        return JsonResponse({'error': 'Invalid request method'}, status=405)
+    
+    # Check if the user is authenticated
+    if not request.user.is_authenticated:
+        return JsonResponse({'error': 'User not authenticated'}, status=401)
+    
+    # Get the data from the request
+     # Get the data from the request
+    try:
+        data = json.loads(request.body)
+    except json.JSONDecodeError:
+        return JsonResponse({'error': 'Invalid JSON'}, status=400)
+    user = request.user
+    user_id = user.id
+    answer_id = data.get('answer_id')
+    
+    # Validate the input
+    if not answer_id or not user_id:
+        return JsonResponse({'error': 'Answer id and user are required'}, status=400)
+    
+    try:
+        answer_id = int(answer_id)
+    except ValueError:
+        return JsonResponse({'error': 'Invalid answer ID'}, status=400)
+    
+    # Add the review to the item
+    response, result = dbcomm.delete_answer(answer_id=answer_id, user_id=user_id)
+    
+    if not response:
+        return JsonResponse(result, status=400)
+
+    return JsonResponse(result, safe=False)
+
+
+

@@ -96,16 +96,16 @@
       'input[name="description"]'
     ).value;
     console.log(id);
-    fetch("{% url 'edit_item' %}", {
-      method: "PUT",
+    fetch("{% url 'delete_answer' %}", {
+      method: "DELETE",
       headers: {
         "Content-Type": "application/json",
         "X-CSRFToken": "{{ csrf_token }}",
       },
       body: JSON.stringify({
-        item_id: id,
-        name: title,
-        description: description,
+        review_id: id,
+        question_id: id,
+        answer_id: id,
       }),
     }).then((response) => {
       if (!response.ok) {

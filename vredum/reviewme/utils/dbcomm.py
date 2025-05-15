@@ -416,133 +416,116 @@ def delete_item(item_id, user_id):
         item = Item.objects.get(id=item_id)
     except Item.DoesNotExist:
         print(f"Item with id {item_id} does not exist.")
-        return False, {}
+        return False, {"errorItemNotFound": "Item not found."}
     
     if not check_same_user(item.added_by_id, user_id):
         print(f"User {user_id} is not authorized to delete this item.")
-        return False, {}
+        return False, {"errorUnauthorized": "User not authorized."}
     
     item.delete()
     print(f"Item '{item.name}' deleted.")
     
-    return True, {}
+    return True, {"message": "Item deleted successfully."}
 
 def delete_review(review_id, user_id):
     try:
         review = Review.objects.get(id=review_id)
     except Review.DoesNotExist:
         print(f"Review with id {review_id} does not exist.")
-        return False, {}
+        return False, {"errorReviewNotFound": "Review not found."}
     
     if not check_same_user(review.user_id, user_id):
         print(f"User {user_id} is not authorized to delete this review.")
-        return False, {}
+        return False, {"errorUnauthorized": "User not authorized."}
     
     review.delete()
     print(f"Review '{review.title}' deleted.")
     
-    return True, {}
+    return True, {"message": "Review deleted successfully."}
 
 def delete_question(question_id, user_id):
     try:
         question = Question.objects.get(id=question_id)
     except Question.DoesNotExist:
         print(f"Question with id {question_id} does not exist.")
-        return False, {}
+        return False, {"errorQuestionNotFound": "Question not found."}
     
     if not check_same_user(question.created_by_id, user_id):
         print(f"User {user_id} is not authorized to delete this question.")
-        return False, {}
+        return False, {"errorUnauthorized": "User not authorized."}
     
     question.delete()
     print(f"Question '{question.text}' deleted.")
     
-    return True, {}
+    return True, {"message": "Question deleted successfully."}
 
 def delete_answer(answer_id, user_id):
     try:
         answer = Answer.objects.get(id=answer_id)
     except Answer.DoesNotExist:
         print(f"Answer with id {answer_id} does not exist.")
-        return False, {}
+        return False, {"errorAnswerNotFound": "Answer not found."}
     
     if not check_same_user(answer.created_by_id, user_id):
         print(f"User {user_id} is not authorized to delete this answer.")
-        return False, {}
+        return False, {"errorUnauthorized": "User not authorized."}
     
     answer.delete()
     print(f"Answer '{answer.text}' deleted.")
     
-    return True, {}
+    return True, {"message": "Answer deleted successfully."}
 
 def remove_tag(tag_id, item_id, user_id):
     try:
         item = Item.objects.get(id=item_id)
     except Item.DoesNotExist:
         print(f"Item with id {item_id} does not exist.")
-        return False, {}
+        return False, {"errorItemNotFound": "Item not found."}
     
     try:
         tag = Tag.objects.get(id=tag_id)
     except Tag.DoesNotExist:
         print(f"Tag with id {tag_id} does not exist.")
-        return False, {}
+        return False, {"errorTagNotFound": "Tag not found."}
     if not check_same_user(item.added_by_id, user_id):
         print(f"User {user_id} is not authorized to remove this tag.")
-        return False, {}
+        return False, {"errorUnauthorized": "User not authorized."}
     
     item.tags.remove(tag)
     item.save()
     print(f"Tag '{tag.name}' removed from item '{item.name}'.")
     
-    return True, {}
+    return True, {"message": "Tag removed successfully."}
 
-def remove_link(link_id, item_id, user_id):
-    try:
-        item = Item.objects.get(id=item_id)
-    except Item.DoesNotExist:
-        print(f"Item with id {item_id} does not exist.")
-        return False, {}
-    
+def delete_link(link_id, user_id):
     try:
         link = Link.objects.get(id=link_id)
     except Link.DoesNotExist:
         print(f"Link with id {link_id} does not exist.")
-        return False, {}
+        return False, {"errorLinkNotFound": "Link not found."}
+    if not check_same_user(link.item.added_by_id, user_id):
+        print(f"User {user_id} is not authorized to delete this link.")
+        return False, {"errorUnauthorized": "User not authorized."}
     
-    if not check_same_user(item.added_by_id, user_id):
-        print(f"User {user_id} is not authorized to remove this link.")
-        return False, {}
+    link.delete()
+    print(f"Link '{link.url}' deleted.")
+    
+    return True, {"message": "Link deleted successfully."}
 
-    
-    item.links.remove(link)
-    item.save()
-    print(f"Link '{link.url}' removed from item '{item.name}'.")
-    
-    return True, {}
-
-def remove_media(media_id, item_id, user_id):
-    try:
-        item = Item.objects.get(id=item_id)
-    except Item.DoesNotExist:
-        print(f"Item with id {item_id} does not exist.")
-        return False, {}
-    
+def delete_media(media_id, user_id):
     try:
         media = Media.objects.get(id=media_id)
     except Media.DoesNotExist:
         print(f"Media with id {media_id} does not exist.")
-        return False, {}
+        return False, {"errorMediaNotFound": "Media not found."}
+    if not check_same_user(media.item.added_by_id, user_id):
+        print(f"User {user_id} is not authorized to delete this media.")
+        return False, {"errorUnauthorized": "User not authorized."}
     
-    if not check_same_user(item.added_by_id, user_id):
-        print(f"User {user_id} is not authorized to remove this media.")
-        return False, {}
+    media.delete()
+    print(f"Media '{media.url}' deleted.")
     
-    item.media.remove(media)
-    item.save()
-    print(f"Media '{media.url}' removed from item '{item.name}'.")
-    
-    return True, {}
+    return True, {"message": "Media deleted successfully."}
 
 def remove_review_like(review_id, user_id):
     try:

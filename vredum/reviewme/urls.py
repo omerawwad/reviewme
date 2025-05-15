@@ -20,4 +20,8 @@ urlpatterns = [
     path("upvote/question", views.upvote_question, name='upvote_question'),
     path("like/answer", views.like_answer, name='like_answer'),
     path("edit/item", views.edit_item, name='edit_item'),
+    path("delete/item", views.delete_item, name='delete_item'),
+    path("delete/review", views.delete_review, name='delete_review'),
+    path("delete/question", views.delete_question, name='delete_question'),
+    path("delete/answer", views.delete_answer, name='delete_answer'),
 ]

@@ -24,4 +24,10 @@ urlpatterns = [
     path("delete/review", views.delete_review, name='delete_review'),
     path("delete/question", views.delete_question, name='delete_question'),
     path("delete/answer", views.delete_answer, name='delete_answer'),
+    path("remove/tag", views.remove_tag, name='remove_tag'),
+    path("delete/media", views.delete_media, name='delete_media'),
+    path("delete/link", views.delete_link, name='delete_link'),
+    path("unlike/review", views.unlike_review, name='unlike_review'),
+    path("unlike/answer", views.unlike_answer, name='unlike_answer'),
+    path("unupvote/question", views.unupvote_question, name='unupvote_question'),
 ]

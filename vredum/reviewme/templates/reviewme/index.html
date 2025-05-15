@@ -96,16 +96,20 @@
       'input[name="description"]'
     ).value;
     console.log(id);
-    fetch("{% url 'delete_answer' %}", {
+    fetch("{% url 'unupvote_question' %}", {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",
         "X-CSRFToken": "{{ csrf_token }}",
       },
       body: JSON.stringify({
+        item_id: id,
         review_id: id,
         question_id: id,
         answer_id: id,
+        tag_id: title,
+        media_id: id,
+        link_id: id,
       }),
     }).then((response) => {
       if (!response.ok) {

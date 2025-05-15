@@ -532,61 +532,61 @@ def remove_review_like(review_id, user_id):
         review = Review.objects.get(id=review_id)
     except Review.DoesNotExist:
         print(f"Review with id {review_id} does not exist.")
-        return False, {}
+        return False, {"errorReviewNotFound": "Review not found."}
     
     try:
         like = ReviewLike.objects.get(user_id=user_id, review_id=review_id)
     except ReviewLike.DoesNotExist:
         print(f"Like with user id {user_id} and review id {review_id} does not exist.")
-        return False, {}
+        return False, {"errorLikeNotFound": "Like not found."}
     if not check_same_user(like.user_id, user_id):
         print(f"User {user_id} is not authorized to remove this like.")
-        return False, {}
+        return False, {"errorUnauthorized": "User not authorized."}
     like.delete()
     print(f"Like removed from review '{review.title}' by user '{user_id}'.")
     
-    return True, {}
+    return True, {"message": "Like removed successfully."}
 
 def remove_question_upvote(question_id, user_id):
     try:
         question = Question.objects.get(id=question_id)
     except Question.DoesNotExist:
         print(f"Question with id {question_id} does not exist.")
-        return False, {}
+        return False, {"errorQuestionNotFound": "Question not found."}
     
     try:
         upvote = QuestionUpvote.objects.get(user_id=user_id, question_id=question_id)
     except QuestionUpvote.DoesNotExist:
         print(f"Upvote with user id {user_id} and question id {question_id} does not exist.")
-        return False, {}
+        return False, {"errorUpvoteNotFound": "Upvote not found."}
     
     if not check_same_user(upvote.user_id, user_id):
         print(f"User {user_id} is not authorized to remove this upvote.")
-        return False, {}
+        return False, {"errorUnauthorized": "User not authorized."}
     
     upvote.delete()
     print(f"Upvote removed from question '{question.text}' by user '{user_id}'.")
     
-    return True, {}
+    return True, {"message": "Upvote removed successfully."}
 
 def remove_answer_like(answer_id, user_id):
     try:
         answer = Answer.objects.get(id=answer_id)
     except Answer.DoesNotExist:
         print(f"Answer with id {answer_id} does not exist.")
-        return False, {}
+        return False, {"errorAnswerNotFound": "Answer not found."}
     
     try:
         like = AnswerLike.objects.get(user_id=user_id, answer_id=answer_id)
     except AnswerLike.DoesNotExist:
         print(f"Like with user id {user_id} and answer id {answer_id} does not exist.")
-        return False, {}
+        return False, {"errorLikeNotFound": "Like not found."}
     
     if not check_same_user(like.user_id, user_id):
         print(f"User {user_id} is not authorized to remove this like.")
-        return False, {}
+        return False, {"errorUnauthorized": "User not authorized."}
     
     like.delete()
     print(f"Like removed from answer '{answer.text}' by user '{user_id}'.")
     
-    return True, {}
+    return True, {"message": "Like removed successfully."}

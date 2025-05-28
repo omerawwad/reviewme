@@ -1,6 +1,6 @@
 # Review Me
 
-> Review Me is website where you can add review about anything you wan't to contribute by your opinion about, whatever its a product, place, service or any other thing. You can also add reviews in fully anonymous way without showing your Identity. The website is made to help people search about products, places, services, ... taking in consideration previous people experiences in a fully freedom oriented platform.
+Review Me is website where you can add review about anything you wan't to contribute by your opinion about, whatever its a product, place, service or any other thing. You can also add reviews in fully anonymous way without showing your Identity. The website is made to help people search about products, places, services, ... taking in consideration previous people experiences in a fully freedom oriented platform.
 
 ## Technologies and Implementation
 

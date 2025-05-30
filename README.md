@@ -42,7 +42,7 @@ The backend is designed to produce **20** RESTful API endpoints with handling di
 | POST       | `/upvote/question`        | `201 CREATED`             | `400 BAD REQUEST` | Auth      | `question_id`               |
 | POST       | `/like/answer`            | `201 CREATED`             | `400 BAD REQUEST` | Auth      | `answer_id`                 |
 | PUT        | `/edit/item`              | `200 OK` `item`           | `400 BAD REQUEST` | Owner     | `item_id` `item`            |
-| PUT        | `/remove/tag`             | `204 NO CONTENT`          | `400 BAD REQUEST` | Owner     | `item_id`, `tag_name`       |
+| PUT        | `/remove/tag`             | `204 NO CONTENT`          | `400 BAD REQUEST` | Owner     | `item_id` `tag_name`        |
 | DELETE     | `/delete/item`            | `204 NO CONTENT`          | `404 NOT FOUND`   | Owner     | `item_id`                   |
 | DELETE     | `/delete/review`          | `204 NO CONTENT`          | `404 NOT FOUND`   | Owner     | `review_id`                 |
 | DELETE     | `/delete/question`        | `204 NO CONTENT`          | `404 NOT FOUND`   | Owner     | `question_id`               |

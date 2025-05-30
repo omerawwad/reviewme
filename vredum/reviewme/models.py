@@ -89,6 +89,8 @@ class Review(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='reviews')
     item = models.ForeignKey(Item, on_delete=models.CASCADE, related_name='reviews')
+    anonymous = models.BooleanField(default=False)
+
 
     def __str__(self):
         return self.title
@@ -104,9 +106,6 @@ class Review(models.Model):
             'item_id': self.item.id,
         }
     
-    def get_rating(self):
-        return self.rating
-
 class Link(models.Model):
     url = models.URLField()
     item = models.ForeignKey(Item, on_delete=models.CASCADE, related_name='links')
@@ -135,6 +134,8 @@ class Question(models.Model):
     item = models.ForeignKey(Item, on_delete=models.CASCADE, related_name='questions')
     created_at = models.DateTimeField(auto_now_add=True)
     created_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='questions')
+    anonymous = models.BooleanField(default=False)
+
 
     def __str__(self):
         return self.text
@@ -154,6 +155,8 @@ class Answer(models.Model):
     question = models.ForeignKey(Question, on_delete=models.CASCADE, related_name='answers')
     created_at = models.DateTimeField(auto_now_add=True)
     created_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='answers')
+    anonymous = models.BooleanField(default=False)
+
 
     def __str__(self):
         return self.text

@@ -12,17 +12,37 @@ from pygments import highlight
 
 
 
+
 from .utils import dbcomm
 from .utils import conversion
+from .utils import Auth
+from .utils import services
+from .utils import requet_parser
 
 
 # Create your views here.
 def index(request):
     # dbcomm.create_item(name='Test Item', description='This is a test item.', user_id=1, media=['https://image_example.com', 'https://image_example2.com'], links=['https://example.com', 'https://example2.com'],tags=['tag1', 'tag2'])
     # print(dbcomm.get_items())
+    user = request.user
+    auth = Auth.is_authenticated(request)
+    print(auth)
     return render(request, 'reviewme/index.html')
 
 # Public APIs ( items -> Fetch All Items,  item/<item_id> -> Fetch Item by ID )
+
+def reviews(request):
+    if request.method != 'GET':
+        return JsonResponse({'error': 'UNAUTHORIZED'}, status=401)
+    
+    page, size = requet_parser.get_page_details(request.GET)
+    response = services.get_all_reviews(page=page, page_size=size)
+
+    if 'error' in response:
+        return JsonResponse({'error': response['error']}, status=404)
+    return JsonResponse(response, safe=False)
+    
+
 
 def items(request):
     if request.method != 'GET':
@@ -122,7 +142,7 @@ def item(request):
     if not request.user.is_authenticated:
         return JsonResponse({'error': 'User not authenticated'}, status=401)
     
-    user = request.user
+    user = request.user    
     user_id = user.id
     
     # Get the data from the request

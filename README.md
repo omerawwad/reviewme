@@ -4,24 +4,26 @@ Review Me is website where you can add review about anything you wan't to contri
 
 ## Technologies and Implementation
 
-### Backend
+### **[Backend](#Backend)**
 
 I **designed and Implemented over 30 RESTful APIs** with different roles and authorization. The backend is implemented using **Python** with **Django** and the database stored using containerized **Postgres** with **Docker**.
 
-### Frontend
+### **[Frontend](#Frontend)**
 
 The frontend is designed and implemented using **React** applying React best practices using **States**, **Props**, **React Router**, **Hooks**, ... that communicate to the backend using RESTful APIs.
 
-## ORM and Database
+## Backend
+
+### ORM and Database
 
 The Database schema is set to have <strong>11 Tables</strong> to insure the system features and here there are.
 
 ![review me database schema](./images/reviewme-schema.png)
 
-## API and Backend Endpoints
+### API and Backend Endpoints
 
 The backend is designed to produce **20** RESTful API endpoints with handling different scenarios of sucess and failure.
 
-| **Method** | **Endpoint** | **Sucess**            | **Failure**     | **Level** |
-| ---------- | ------------ | --------------------- | --------------- | --------- |
-| `GET`      | `/items`     | `200 OK` `page<Item>` | `404 NOT FOUND` | Guest     |
+| **Method** | **Endpoint** | **Sucess**            | **Failure**     | **Level** | param                |
+| ---------- | ------------ | --------------------- | --------------- | --------- | -------------------- |
+| `GET`      | `/items`     | `200 OK` `page<Item>` | `404 NOT FOUND` | Guest     | `page` `size` `sort` |

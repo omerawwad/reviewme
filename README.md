@@ -24,7 +24,32 @@ The Database schema is set to have <strong>11 Tables</strong> to insure the syst
 
 The backend is designed to produce **20** RESTful API endpoints with handling different scenarios of success and failure.
 
-| **Method** | **Endpoint**  | **Sucess**            | **Failure**     | **Level** | param                |
-| ---------- | ------------- | --------------------- | --------------- | --------- | -------------------- |
-| `GET`      | `/items`      | `200 OK` `page<Item>` | `404 NOT FOUND` | Guest     | `page` `size` `sort` |
-| `GET`      | `/items/{id}` | `200 OK` `Item`       | `404 NOT FOUND` | Guest     | -                    |
+| **Method** | **Endpoint**              | **Sucess**                | **Failure**       | **Level** | param                            |
+| ---------- | ------------------------- | ------------------------- | ----------------- | --------- | -------------------------------- |
+| `GET`      | `/items`                  | `200 OK` `page<Item>`     | `404 NOT FOUND`   | Guest     | `page` `size` `sort`             |
+| GET        | `/item/{item_id}`         | `200 OK` `Item`           | `404 NOT FOUND`   | Guest     | `item_id`                        |
+| GET        | `/highlighted`            | `200 OK` `Item`           | `404 NOT FOUND`   | Guest     | -                                |
+| GET        | `/review/{review_id}`     | `200 OK` `Review`         | `404 NOT FOUND`   | Guest     | `review_id`                      |
+| GET        | `/question/{question_id}` | `200 OK` `Question`       | `404 NOT FOUND`   | Guest     | `question_id`                    |
+| POST       | `/item`                   | `200 OK` / `201 Created`  | `400 BAD REQUEST` | Auth      | `POST: item data`                |
+| POST       | `/add/tag`                | `201 Created`             | `400 BAD REQUEST` | Auth      | `item_id`, `tag_name`            |
+| POST       | `/add/review`             | `201 Created`             | `400 BAD REQUEST` | Auth      | `item_id`, `review_text`, etc.   |
+| POST       | `/add/question`           | `201 Created`             | `400 BAD REQUEST` | Auth      | `item_id`, `question_text`, etc. |
+| POST       | `/add/answer`             | `201 Created`             | `400 BAD REQUEST` | Auth      | `question_id`, `answer_text`     |
+| GET        | `/user/reviews`           | `200 OK` `List<Review>`   | `403 FORBIDDEN`   | Auth      | -                                |
+| GET        | `/user/questions`         | `200 OK` `List<Question>` | `403 FORBIDDEN`   | Auth      | -                                |
+| GET        | `/user/answers`           | `200 OK` `List<Answer>`   | `403 FORBIDDEN`   | Auth      | -                                |
+| POST       | `/like/review`            | `200 OK`                  | `400 BAD REQUEST` | Auth      | `review_id`                      |
+| POST       | `/upvote/question`        | `200 OK`                  | `400 BAD REQUEST` | Auth      | `question_id`                    |
+| POST       | `/like/answer`            | `200 OK`                  | `400 BAD REQUEST` | Auth      | `answer_id`                      |
+| PUT        | `/edit/item`              | `200 OK` `Item`           | `400 BAD REQUEST` | Auth      | `item_id`, `fields to update`    |
+| DELETE     | `/delete/item`            | `204 NO CONTENT`          | `404 NOT FOUND`   | Auth      | `item_id`                        |
+| DELETE     | `/delete/review`          | `204 NO CONTENT`          | `404 NOT FOUND`   | Auth      | `review_id`                      |
+| DELETE     | `/delete/question`        | `204 NO CONTENT`          | `404 NOT FOUND`   | Auth      | `question_id`                    |
+| DELETE     | `/delete/answer`          | `204 NO CONTENT`          | `404 NOT FOUND`   | Auth      | `answer_id`                      |
+| POST       | `/remove/tag`             | `200 OK`                  | `400 BAD REQUEST` | Auth      | `item_id`, `tag_name`            |
+| DELETE     | `/delete/media`           | `204 NO CONTENT`          | `404 NOT FOUND`   | Auth      | `media_id`                       |
+| DELETE     | `/delete/link`            | `204 NO CONTENT`          | `404 NOT FOUND`   | Auth      | `link_id`                        |
+| POST       | `/unlike/review`          | `200 OK`                  | `400 BAD REQUEST` | Auth      | `review_id`                      |
+| POST       | `/unlike/answer`          | `200 OK`                  | `400 BAD REQUEST` | Auth      | `answer_id`                      |
+| POST       | `/unupvote/question`      | `200 OK`                  | `400 BAD REQUEST` | Auth      | `question_id`                    |

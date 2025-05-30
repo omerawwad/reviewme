@@ -117,6 +117,7 @@ class Link(models.Model):
 class Media(models.Model):
     url = models.URLField()
     item = models.ForeignKey(Item, on_delete=models.CASCADE, related_name='media')
+    review = models.ForeignKey(Review, on_delete=models.CASCADE, related_name='links', null=True, blank=True)
 
     def __str__(self):
         return self.url
@@ -171,6 +172,7 @@ class ReviewLike(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='review_likes')
     review = models.ForeignKey(Review, on_delete=models.CASCADE, related_name='likes')
     created_at = models.DateTimeField(auto_now_add=True)
+    notified = models.BooleanField(default=False)
 
     def __str__(self):
         return f"{self.user.username} liked {self.review.title}"
@@ -191,6 +193,7 @@ class QuestionUpvote(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='question_upvotes')
     question = models.ForeignKey(Question, on_delete=models.CASCADE, related_name='upvotes')
     created_at = models.DateTimeField(auto_now_add=True)
+    notified = models.BooleanField(default=False)
 
     def __str__(self):
         return f"{self.user.username} upvoted {self.question.text}"
@@ -211,6 +214,7 @@ class AnswerLike(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='answer_likes')
     answer = models.ForeignKey(Answer, on_delete=models.CASCADE, related_name='likes')
     created_at = models.DateTimeField(auto_now_add=True)
+    notified = models.BooleanField(default=False)
 
     def __str__(self):
         return f"{self.user.username} liked {self.answer.text}"

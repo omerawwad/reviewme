@@ -13,3 +13,15 @@ I **designed and Implemented over 30 RESTful APIs** with different roles and aut
 The frontend is designed and implemented using **React** applying React best practices using **States**, **Props**, **React Router**, **Hooks**, ... that communicate to the backend using RESTful APIs.
 
 ## ORM and Database
+
+The Database schema is set to have <strong>11 Tables</strong> to insure the system features and here there are.
+
+![review me database schema](./images/reviewme-schema.png)
+
+## API and Backend Endpoints
+
+The backend is designed to produce **20** RESTful API endpoints with handling different scenarios of sucess and failure.
+
+| **Method** | **Endpoint** | **Sucess**            | **Failure**     |
+| ---------- | ------------ | --------------------- | --------------- |
+| `GET`      | `/items`     | `200 OK` `page<Item>` | `404 NOT FOUND` |

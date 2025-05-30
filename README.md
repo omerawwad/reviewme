@@ -22,6 +22,6 @@ The Database schema is set to have <strong>11 Tables</strong> to insure the syst
 
 The backend is designed to produce **20** RESTful API endpoints with handling different scenarios of sucess and failure.
 
-| **Method** | **Endpoint** | **Sucess**            | **Failure**     |
-| ---------- | ------------ | --------------------- | --------------- |
-| `GET`      | `/items`     | `200 OK` `page<Item>` | `404 NOT FOUND` |
+| **Method** | **Endpoint** | **Sucess**            | **Failure**     | **Level** |
+| ---------- | ------------ | --------------------- | --------------- | --------- |
+| `GET`      | `/items`     | `200 OK` `page<Item>` | `404 NOT FOUND` | Guest     |

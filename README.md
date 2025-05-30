@@ -26,7 +26,9 @@ The backend is designed to produce **20** RESTful API endpoints with handling di
 
 | **Method** | **Endpoint**              | **Sucess**                    | **Failure**       | **Level** | param                       |
 | ---------- | ------------------------- | ----------------------------- | ----------------- | --------- | --------------------------- |
-| `GET`      | `/items`                  | `200 OK` `page<Item>`         | `404 NOT FOUND`   | Guest     | `page` `size` `sort`        |
+| `GET`      | `/review`                 | `200 OK` `page<Review>`       | `404 NOT FOUND`   | Guest     | `page` `size` `sort`        |
+| `GET`      | `/tag/{tag_name}`         | `200 OK` `page<ItemBrief>`    | `404 NOT FOUND`   | Guest     | `page` `size` `sort`        |
+| `GET`      | `/search`                 | `200 OK` `List<ItemBrief>`    | `404 NOT FOUND`   | Guest     | `query` `limit`             |
 | GET        | `/item/{item_id}`         | `200 OK` `Item`               | `404 NOT FOUND`   | Guest     | -                           |
 | GET        | `/review/{review_id}`     | `200 OK` `Item:Review`        | `404 NOT FOUND`   | Guest     | -                           |
 | GET        | `/question/{question_id}` | `200 OK` `Item:Question`      | `404 NOT FOUND`   | Guest     | -                           |

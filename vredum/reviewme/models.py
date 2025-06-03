@@ -146,8 +146,21 @@ class Question(models.Model):
             'text': self.text,
             'created_at': self.created_at,
             'created_by': self.created_by.username,
+            'answers_count': self.get_number_of_answers(),
             'answers': [answer.serialize() for answer in self.answers.all()],
         }
+    
+    def serialize_just_question(self):
+        return {
+            'item_id': self.item.id,
+            'text': self.text,
+            'created_at': self.created_at,
+            'created_by': self.created_by.username,
+            'answers_count': self.get_number_of_answers(),
+        }
+    
+    def get_number_of_answers(self):
+        return self.answers.count()
     
     
 class Answer(models.Model):
@@ -164,6 +177,16 @@ class Answer(models.Model):
     def serialize(self):
         return {
             'question': self.question_id,
+            'text': self.text,
+            'created_at': self.created_at,
+            'created_by': self.created_by.username,
+            'likes': self.likes.count(),
+        }
+    
+    def serialize_with_question(self):
+        question = self.question.serialize_just_question()
+        return {
+            'question': question,
             'text': self.text,
             'created_at': self.created_at,
             'created_by': self.created_by.username,

@@ -1,4 +1,4 @@
-from ..models import Review, Item, Question
+from ..models import Review, Item, Question, Answer
 from django.core.paginator import Paginator
 def get_all_reviews(page=1, page_size=10, sort_by='created_at,desc'):
     """
@@ -53,13 +53,27 @@ def get_items_by_tag(tag_name, page=1, page_size=10, sort_by='created_at,desc'):
         'total_items': paginator.count
     }
 
-def search_items(search_query, page=1, page_size=10, sort_by='created_at,desc'):
+def search_items(query, page=1, page_size=10, sort_by='created_at,desc'):
     """
     Search for items by name or description with pagination and sorted.
     """
     sort_field, order = sort_by.split(',') if sort_by else ('created_at', 'desc')
     try:
-        items = Item.objects.filter(name__icontains=search_query).order_by(f'-{sort_field}' if order == 'desc' else sort_field)
+        items = Item.objects.filter(name__icontains=query)
+        if not items:
+            return {'error': 'No items found', 'items': []}
+        paginator = Paginator(items, page_size)
+        try:
+            paginated_items = paginator.page(page)
+        except Exception as e:
+            return {'error': str(e), 'items': []}
+        return {
+            'items': [item.serialize() for item in paginated_items],
+            'page': page,
+            'page_size': page_size,
+            'total_pages': paginator.num_pages,
+            'total_items': paginator.count
+        }
     except Exception as e:
         return {'error': str(e), 'items': []}
     
@@ -103,3 +117,58 @@ def get_item_with_hl_question(question_id):
         return response
     except Exception as e:
         return {'error': str(e), 'items': []}
+    
+def get_user_reviews(user_id, page=1, page_size=10, sort_by='created_at,desc'):
+    try:
+        reviews = Review.objects.filter(user_id=user_id)
+        paginator = Paginator(reviews, page_size)
+        try:
+            paginated_reviews = paginator.page(page)
+        except Exception as e:
+            return {'error': str(e), 'reviews': []}
+
+        return {
+            'reviews': [review.serialize() for review in paginated_reviews],
+            'page': page,
+            'page_size': page_size,
+            'total_pages': paginator.num_pages,
+            'total_reviews': paginator.count
+        }
+    except Exception as e:
+        return {'error': str(e), 'reviews': []}
+    
+def get_user_questions(user_id, page=1, page_size=10, sort_by='created_at,desc'):
+    try:
+        questions = Question.objects.filter(created_by=user_id)
+        paginator = Paginator(questions, page_size)
+        try:
+            paginated_questions = paginator.page(page)
+        except Exception as e:
+            return {'error': str(e), 'questions': []}
+        return {
+            'questions': [question.serialize() for question in paginated_questions],
+            'page': page,
+            'page_size': page_size,
+            'total_pages': paginator.num_pages,
+            'total_questions': paginator.count
+        }
+    except Exception as e:
+        return {'error': str(e), 'questions': []}
+
+def get_user_answers(user_id, page=1, page_size=10, sort_by='created_at,desc'):
+    try:
+        answers = Answer.objects.filter(created_by=user_id)
+        paginator = Paginator(answers, page_size)
+        try:
+            paginated_answers = paginator.page(page)
+        except Exception as e:
+            return {'error': str(e), 'answers': []}
+        return {
+            'answers': [answer.serialize_with_question() for answer in paginated_answers],
+            'page': page,
+            'page_size': page_size,
+            'total_pages': paginator.num_pages,
+            'total_answers': paginator.count
+        }
+    except Exception as e:
+        return {'error': str(e), 'answers': []}

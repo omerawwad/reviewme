@@ -68,6 +68,18 @@ def search_items(request):
         return JsonResponse({'error': response['error']}, status=404)
     return JsonResponse(response, safe=False)
 
+def search_items(request):
+    if request.method != 'GET':
+        return JsonResponse({'error': 'Invalid request method'}, status=405)
+    if not request.GET.get('query'):
+        return JsonResponse({'error': 'Query parameter is required'}, status=404)
+    query = request.GET.get('query', '').strip()
+    page, size = request_parser.get_page_details(request.GET)
+
+    response = services.search_items(query=query, page=page, page_size=size)
+    if 'error' in response:
+        return JsonResponse({'error': response['error']}, status=404)
+    return JsonResponse(response, safe=False)
 
 def get_item(request, item_id):
     if request.method != 'GET':
@@ -97,6 +109,36 @@ def question(request, question_id):
         return JsonResponse({'error': response['error']}, status=404)
     return JsonResponse(response, safe=False)
     
+def get_user_reviews(request, user_id):
+    if request.method != 'GET':
+        return JsonResponse({'error': 'Invalid request method'}, status=405)
+    
+    page, size = request_parser.get_page_details(request.GET)
+    response = services.get_user_reviews(user_id=user_id, page=page, page_size=size)
+    if 'error' in response:
+        return JsonResponse({'error': response['error']}, status=404)
+    return JsonResponse(response, safe=False)
+
+def get_user_questions(request, user_id):
+    if request.method != 'GET':
+        return JsonResponse({'error': 'Invalid request method'}, status=405)
+    
+    page, size = request_parser.get_page_details(request.GET)
+    response = services.get_user_questions(user_id=user_id, page=page, page_size=size)
+    if 'error' in response:
+        return JsonResponse({'error': response['error']}, status=404)
+    return JsonResponse(response, safe=False)
+
+def get_user_answers(request, user_id):
+    if request.method != 'GET':
+        return JsonResponse({'error': 'Invalid request method'}, status=405)
+    
+    page, size = request_parser.get_page_details(request.GET)
+    response = services.get_user_answers(user_id=user_id, page=page, page_size=size)
+    if 'error' in response:
+        return JsonResponse({'error': response['error']}, status=404)
+    return JsonResponse(response, safe=False)
+
     
 def items(request):
     if request.method != 'GET':
@@ -381,100 +423,6 @@ def add_answer(request):
         return JsonResponse({'error': 'Question does not exist'}, status=400)
 
     return JsonResponse(result.serialize(), safe=False)
-
-@login_required
-def get_user_reviews(request):
-    if request.method != 'GET':
-        return JsonResponse({'error': 'Invalid request method'}, status=405)
-    
-    # Check if the user is authenticated
-    if not request.user.is_authenticated:
-        return JsonResponse({'error': 'User not authenticated'}, status=401)
-    
-    user = request.user
-    user_id = user.id
-    
-    # Get the data from the request
-     # Get the data from the request
-    try:
-        data = json.loads(request.body)
-    except json.JSONDecodeError:
-        return JsonResponse({'error': 'Invalid JSON'}, status=400)
-    item_id = data.get('item_id')
-    
-    # Validate the input
-    if not user_id:
-        return JsonResponse({'error': 'Item id and user are required'}, status=400)
-    
-    # Add the review to the item
-    response, result = dbcomm.get_user_reviews(user_id=user_id)
-    
-    if not response:
-        return JsonResponse({'error': 'Item does not exist'}, status=400)
-
-    return JsonResponse({"result": result, "user": user.username}, safe=False)
-
-def get_user_questions(request):
-    if request.method != 'GET':
-        return JsonResponse({'error': 'Invalid request method'}, status=405)
-    
-    # Check if the user is authenticated
-    if not request.user.is_authenticated:
-        return JsonResponse({'error': 'User not authenticated'}, status=401)
-    
-    user = request.user
-    user_id = user.id
-    
-    # Get the data from the request
-     # Get the data from the request
-    try:
-        data = json.loads(request.body)
-    except json.JSONDecodeError:
-        return JsonResponse({'error': 'Invalid JSON'}, status=400)
-    item_id = data.get('item_id')
-    
-    # Validate the input
-    if not user_id:
-        return JsonResponse({'error': 'Item id and user are required'}, status=400)
-    
-    # Add the review to the item
-    response, result = dbcomm.get_user_questions(user_id=user_id)
-    
-    if not response:
-        return JsonResponse({'error': 'Item does not exist'}, status=400)
-
-    return JsonResponse({"result": result, "user": user.username}, safe=False)
-
-def get_user_answers(request):
-    if request.method != 'GET':
-        return JsonResponse({'error': 'Invalid request method'}, status=405)
-    
-    # Check if the user is authenticated
-    if not request.user.is_authenticated:
-        return JsonResponse({'error': 'User not authenticated'}, status=401)
-    
-    user = request.user
-    user_id = user.id
-    
-    # Get the data from the request
-     # Get the data from the request
-    try:
-        data = json.loads(request.body)
-    except json.JSONDecodeError:
-        return JsonResponse({'error': 'Invalid JSON'}, status=400)
-    item_id = data.get('item_id')
-    
-    # Validate the input
-    if not user_id:
-        return JsonResponse({'error': 'Item id and user are required'}, status=400)
-    
-    # Add the review to the item
-    response, result = dbcomm.get_user_answers(user_id=user_id)
-    
-    if not response:
-        return JsonResponse({'error': 'Item does not exist'}, status=400)
-
-    return JsonResponse({"result": result, "user": user.username}, safe=False)
 
 @login_required
 def like_review(request):
@@ -1037,16 +985,7 @@ def tag_items(request, tag_name):
     return JsonResponse(result, safe=False)
 
 
-def search_items(request):
-    if request.method != 'GET':
-        return JsonResponse({'error': 'Invalid request method'}, status=405)
-    query = request.GET.get('query', '').strip()
-    limit = int(request.GET.get('limit', 10))
-    if not query:
-        return JsonResponse({'error': 'Query parameter is required'}, status=400)
-    items = dbcomm.Item.objects.filter(name__icontains=query)[:limit]
-    result = {'results': [item.brief() for item in items]}
-    return JsonResponse(result, safe=False)
+
 
 
 def user_reviews(request, user_id):

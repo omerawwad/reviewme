@@ -53,6 +53,21 @@ def get_items_by_tag(request, tag_name):
         return JsonResponse({'error': response['error']}, status=404)
     return JsonResponse(response, safe=False)
 
+def search_items(request):
+    if request.method != 'GET':
+        return JsonResponse({'error': 'Invalid request method'}, status=405)
+    
+    if not request.GET.get('search'):
+        return JsonResponse({'error': 'Search query is required'}, status=404)
+
+    search_query = request.GET.get('search')
+    page, size = request_parser.get_page_details(request.GET)
+    response = services.search_items(search_query=search_query, page=page, page_size=size)
+
+    if 'error' in response:
+        return JsonResponse({'error': response['error']}, status=404)
+    return JsonResponse(response, safe=False)
+
 
 def review(request, review_id):
     if request.method != 'GET':

@@ -52,3 +52,13 @@ def get_items_by_tag(tag_name, page=1, page_size=10, sort_by='created_at,desc'):
         'total_pages': paginator.num_pages,
         'total_items': paginator.count
     }
+
+def search_items(search_query, page=1, page_size=10, sort_by='created_at,desc'):
+    """
+    Search for items by name or description with pagination and sorted.
+    """
+    sort_field, order = sort_by.split(',') if sort_by else ('created_at', 'desc')
+    try:
+        items = Item.objects.filter(name__icontains=search_query).order_by(f'-{sort_field}' if order == 'desc' else sort_field)
+    except Exception as e:
+        return {'error': str(e), 'items': []}

@@ -5,6 +5,7 @@ urlpatterns = [
     path('', views.index, name='index'),
     path("reviews", views.reviews, name='reviews'),
     path("tag/<str:tag_name>", views.get_items_by_tag, name='get_items_by_tag'),
+    path("search", views.search_items, name='search_items'),
     path("items", views.items, name='items'),
     path("item/<int:item_id>", views.get_item, name='item'),
     path("highlighted", views.get_item_with_hl, name='highlighted'),

@@ -83,23 +83,19 @@ def review(request, review_id):
     if request.method != 'GET':
         return JsonResponse({'error': 'Invalid request method'}, status=405)
     
-    response, result = dbcomm.get_item_with_hl_review(review_id=review_id)
-
-    if not response:
-        return JsonResponse({'error': 'Review Does Not Exist'}, status=400)
-
-    return JsonResponse(result, safe=False)
+    response = services.get_item_with_hl_review(review_id=review_id)
+    if 'error' in response:
+        return JsonResponse({'error': response['error']}, status=404)
+    return JsonResponse(response, safe=False)
 
 def question(request, question_id):
     if request.method != 'GET':
         return JsonResponse({'error': 'Invalid request method'}, status=405)
     
-    response, result = dbcomm.get_item_with_hl_question(question_id=question_id)
-
-    if not response:
-        return JsonResponse({'error': 'Question Does Not Exist'}, status=400)
-
-    return JsonResponse(result, safe=False)
+    response = services.get_item_with_hl_question(question_id=question_id)
+    if 'error' in response:
+        return JsonResponse({'error': response['error']}, status=404)
+    return JsonResponse(response, safe=False)
     
     
 def items(request):

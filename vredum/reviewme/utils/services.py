@@ -1,4 +1,4 @@
-from ..models import Review, Item
+from ..models import Review, Item, Question
 from django.core.paginator import Paginator
 def get_all_reviews(page=1, page_size=10, sort_by='created_at,desc'):
     """
@@ -69,6 +69,36 @@ def get_item(item_id):
         response = {
             "item": item.serialize(),
             "highlighted": False,
+        }
+        return response
+    except Exception as e:
+        return {'error': str(e), 'items': []}
+    
+def get_item_with_hl_review(review_id):
+    try:
+        review = Review.objects.get(id=review_id)
+        item_id = review.item_id
+        item = Item.objects.get(id=item_id)
+        response = {
+            "item": item.serialize(),
+            "highlighted": True,
+            "highlighted_type": "review",
+            "highlighted_content": review.serialize(),
+        }
+        return response
+    except Exception as e:
+        return {'error': str(e), 'items': []}
+
+def get_item_with_hl_question(question_id):
+    try:
+        question = Question.objects.get(id=question_id)
+        item_id = question.item_id
+        item = Item.objects.get(id=item_id)
+        response = {
+            "item": item.serialize(),
+            "highlighted": True,
+            "highlighted_type": "question",
+            "highlighted_content": question.serialize(),
         }
         return response
     except Exception as e:

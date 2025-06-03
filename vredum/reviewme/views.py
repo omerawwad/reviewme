@@ -17,7 +17,7 @@ from .utils import dbcomm
 from .utils import conversion
 from .utils import Auth
 from .utils import services
-from .utils import requet_parser
+from .utils import request_parser
 
 
 # Create your views here.
@@ -35,15 +35,48 @@ def reviews(request):
     if request.method != 'GET':
         return JsonResponse({'error': 'UNAUTHORIZED'}, status=401)
     
-    page, size = requet_parser.get_page_details(request.GET)
+    page, size = request_parser.get_page_details(request.GET)
     response = services.get_all_reviews(page=page, page_size=size)
 
     if 'error' in response:
         return JsonResponse({'error': response['error']}, status=404)
     return JsonResponse(response, safe=False)
+
+def get_items_by_tag(request, tag_name):
+    if request.method != 'GET':
+        return JsonResponse({'error': 'Invalid request method'}, status=405)
     
+    page, size = request_parser.get_page_details(request.GET)
+    response = services.get_items_by_tag(tag_name=tag_name, page=page, page_size=size)
+
+    if 'error' in response:
+        return JsonResponse({'error': response['error']}, status=404)
+    return JsonResponse(response, safe=False)
 
 
+def review(request, review_id):
+    if request.method != 'GET':
+        return JsonResponse({'error': 'Invalid request method'}, status=405)
+    
+    response, result = dbcomm.get_item_with_hl_review(review_id=review_id)
+
+    if not response:
+        return JsonResponse({'error': 'Review Does Not Exist'}, status=400)
+
+    return JsonResponse(result, safe=False)
+
+def question(request, question_id):
+    if request.method != 'GET':
+        return JsonResponse({'error': 'Invalid request method'}, status=405)
+    
+    response, result = dbcomm.get_item_with_hl_question(question_id=question_id)
+
+    if not response:
+        return JsonResponse({'error': 'Question Does Not Exist'}, status=400)
+
+    return JsonResponse(result, safe=False)
+    
+    
 def items(request):
     if request.method != 'GET':
         return JsonResponse({'error': 'Invalid request method'}, status=405)
@@ -109,27 +142,6 @@ def get_item_with_hl(request):
             return JsonResponse({'error': 'Question Does Not Exist'}, status=400)
         return JsonResponse(result, safe=False)
 
-def review(request, review_id):
-    if request.method != 'GET':
-        return JsonResponse({'error': 'Invalid request method'}, status=405)
-    
-    response, result = dbcomm.get_item_with_hl_review(review_id=review_id)
-
-    if not response:
-        return JsonResponse({'error': 'Review Does Not Exist'}, status=400)
-
-    return JsonResponse(result, safe=False)
-
-def question(request, question_id):
-    if request.method != 'GET':
-        return JsonResponse({'error': 'Invalid request method'}, status=405)
-    
-    response, result = dbcomm.get_item_with_hl_question(question_id=question_id)
-
-    if not response:
-        return JsonResponse({'error': 'Question Does Not Exist'}, status=400)
-
-    return JsonResponse(result, safe=False)
 
 # Private APIs ( create_item -> Create Item, update_item -> Update Item, delete_item -> Delete Item )
 
@@ -991,6 +1003,69 @@ def unlike_answer(request):
         return JsonResponse(result, status=400)
 
     return JsonResponse(result, safe=False)
+
+def tag_items(request, tag_name):
+    if request.method != 'GET':
+        return JsonResponse({'error': 'Invalid request method'}, status=405)
+    page, size = requet_parser.get_page_details(request.GET)
+    tag = dbcomm.get_Tag(tag_name)
+    if not tag:
+        return JsonResponse({'error': 'Tag not found'}, status=404)
+    items = tag.items.all()
+    total = items.count()
+    start = (page - 1) * size
+    end = start + size
+    paginated = items[start:end]
+    result = {
+        'items': [item.brief() for item in paginated],
+        'page': page,
+        'page_size': size,
+        'total_items': total,
+        'total_pages': (total + size - 1) // size
+    }
+    return JsonResponse(result, safe=False)
+
+
+def search_items(request):
+    if request.method != 'GET':
+        return JsonResponse({'error': 'Invalid request method'}, status=405)
+    query = request.GET.get('query', '').strip()
+    limit = int(request.GET.get('limit', 10))
+    if not query:
+        return JsonResponse({'error': 'Query parameter is required'}, status=400)
+    items = dbcomm.Item.objects.filter(name__icontains=query)[:limit]
+    result = {'results': [item.brief() for item in items]}
+    return JsonResponse(result, safe=False)
+
+
+def user_reviews(request, user_id):
+    if request.method != 'GET':
+        return JsonResponse({'error': 'Invalid request method'}, status=405)
+    page, size = requet_parser.get_page_details(request.GET)
+    response = dbcomm.get_user_reviews(user_id=user_id, page=page, page_size=size)
+    if not response[0]:
+        return JsonResponse({'error': 'User or reviews not found'}, status=404)
+    return JsonResponse(response[1], safe=False)
+
+
+def user_questions(request, user_id):
+    if request.method != 'GET':
+        return JsonResponse({'error': 'Invalid request method'}, status=405)
+    page, size = requet_parser.get_page_details(request.GET)
+    response = dbcomm.get_user_questions(user_id=user_id, page=page, page_size=size)
+    if not response[0]:
+        return JsonResponse({'error': 'User or questions not found'}, status=404)
+    return JsonResponse(response[1], safe=False)
+
+
+def user_answers(request, user_id):
+    if request.method != 'GET':
+        return JsonResponse({'error': 'Invalid request method'}, status=405)
+    page, size = requet_parser.get_page_details(request.GET)
+    response = dbcomm.get_user_answers(user_id=user_id, page=page, page_size=size)
+    if not response[0]:
+        return JsonResponse({'error': 'User or answers not found'}, status=404)
+    return JsonResponse(response[1], safe=False)
 
 
 

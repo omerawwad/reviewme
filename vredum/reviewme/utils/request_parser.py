@@ -30,4 +30,3 @@ def get_page_details(parameters):
 
 
     return page, size
-

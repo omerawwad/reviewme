@@ -77,7 +77,7 @@ class Item(models.Model):
     def get_average_rating(self):
         reviews = self.reviews.all()
         if reviews:
-            total_rating = sum(review.get_rating() for review in reviews)
+            total_rating = sum(review.rating for review in reviews)
             return total_rating / len(reviews)
         return 0
 

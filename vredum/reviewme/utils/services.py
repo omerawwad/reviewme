@@ -62,3 +62,14 @@ def search_items(search_query, page=1, page_size=10, sort_by='created_at,desc'):
         items = Item.objects.filter(name__icontains=search_query).order_by(f'-{sort_field}' if order == 'desc' else sort_field)
     except Exception as e:
         return {'error': str(e), 'items': []}
+    
+def get_item(item_id):
+    try:
+        item = Item.objects.get(id=item_id)
+        response = {
+            "item": item.serialize(),
+            "highlighted": False,
+        }
+        return response
+    except Exception as e:
+        return {'error': str(e), 'items': []}

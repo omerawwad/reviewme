@@ -69,6 +69,16 @@ def search_items(request):
     return JsonResponse(response, safe=False)
 
 
+def get_item(request, item_id):
+    if request.method != 'GET':
+        return JsonResponse({'error': 'Invalid request method'}, status=405)
+    
+    response = services.get_item(item_id=item_id)
+
+    if 'error' in response:
+        return JsonResponse({'error': response['error']}, status=404)
+    return JsonResponse(response, safe=False)
+
 def review(request, review_id):
     if request.method != 'GET':
         return JsonResponse({'error': 'Invalid request method'}, status=405)
@@ -113,16 +123,6 @@ def items(request):
 
     return JsonResponse(result, safe=False)
 
-def get_item(request, item_id):
-    if request.method != 'GET':
-        return JsonResponse({'error': 'Invalid request method'}, status=405)
-    
-    response, result = dbcomm.get_item(item_id=item_id)
-    
-    if not response:
-        return JsonResponse({'error': 'Item Does Not Exist'}, status=400)
-
-    return JsonResponse(result, safe=False)
 
 
 def get_item_with_hl(request):

@@ -17,3 +17,8 @@ def is_owner(request, obj):
     if hasattr(obj, 'created_by'):
         return obj.created_by == request.user
     return False
+
+def get_user_id(request):
+    if not request.user.is_authenticated:
+        return None
+    return request.user.id

@@ -30,3 +30,15 @@ def get_page_details(parameters):
 
 
     return page, size
+
+def get_notification_id(parameters):
+    """
+    Extracts notification ID from the request parameters.
+    """
+    if 'notification_id' in parameters:
+        try:
+            notification_id = int(parameters.get('notification_id'))
+            return notification_id
+        except ValueError:
+            return None
+    return None

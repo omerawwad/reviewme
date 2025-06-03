@@ -192,13 +192,11 @@ class Answer(models.Model):
             'created_by': self.created_by.username,
             'likes': self.likes.count(),
         }
-    
 
 class ReviewLike(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='review_likes')
     review = models.ForeignKey(Review, on_delete=models.CASCADE, related_name='likes')
     created_at = models.DateTimeField(auto_now_add=True)
-    notified = models.BooleanField(default=False)
 
     def __str__(self):
         return f"{self.user.username} liked {self.review.title}"
@@ -219,7 +217,6 @@ class QuestionUpvote(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='question_upvotes')
     question = models.ForeignKey(Question, on_delete=models.CASCADE, related_name='upvotes')
     created_at = models.DateTimeField(auto_now_add=True)
-    notified = models.BooleanField(default=False)
 
     def __str__(self):
         return f"{self.user.username} upvoted {self.question.text}"
@@ -240,7 +237,6 @@ class AnswerLike(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='answer_likes')
     answer = models.ForeignKey(Answer, on_delete=models.CASCADE, related_name='likes')
     created_at = models.DateTimeField(auto_now_add=True)
-    notified = models.BooleanField(default=False)
 
     def __str__(self):
         return f"{self.user.username} liked {self.answer.text}"
@@ -256,4 +252,37 @@ class AnswerLike(models.Model):
             'answer': self.answer.text,
             'created_at': self.created_at,
         }
+
+class Notification(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='notifications')
+    message = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    read = models.BooleanField(default=False)
+    type = models.CharField(max_length=50, choices=[
+        ('review', 'review'),
+        ('question', 'question'),
+        ('answer', 'answer')
+    ], default='review')
+    review = models.ForeignKey(Review, on_delete=models.CASCADE, related_name='notifications', null=True, blank=True)
+    question = models.ForeignKey(Question, on_delete=models.CASCADE, related_name='notifications', null=True, blank=True)
+    answer = models.ForeignKey(Answer, on_delete=models.CASCADE, related_name='notifications', null=True, blank=True)
+
+
+    def __str__(self):
+        return f"{self.user.username} - {self.message[:20]}..."
+    def serialize(self):
+        return {
+            'id': self.id,
+            'user': self.user.username,
+            'message': self.message,
+            'created_at': self.created_at,
+            'read': self.read,
+            'type': self.type,
+            'review': self.review.id if self.review else None,
+            'question': self.question.id if self.question else None,
+            'answer': self.answer.id if self.answer else None,
+        }
     
+    def mark_as_read(self):
+        self.read = True
+        self.save()

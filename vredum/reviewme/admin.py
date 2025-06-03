@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import AnswerLike, Review, Item, User, Tag, Link, Media, Question, Answer, ReviewLike, QuestionUpvote
+from .models import AnswerLike, Review, Item, User, Tag, Link, Media, Question, Answer, ReviewLike, QuestionUpvote, Notification
 
 # Register your models here.
 
@@ -14,3 +14,5 @@ admin.site.register(Answer)
 admin.site.register(ReviewLike)
 admin.site.register(QuestionUpvote)
 admin.site.register(AnswerLike)
+admin.site.register(Notification)
+

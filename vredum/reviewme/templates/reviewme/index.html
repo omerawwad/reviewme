@@ -96,8 +96,8 @@
       'input[name="description"]'
     ).value;
     console.log(id);
-    fetch("{% url 'unupvote_question' %}", {
-      method: "DELETE",
+    fetch("{% url 'read_notification' %}", {
+      method: "POST",
       headers: {
         "Content-Type": "application/json",
         "X-CSRFToken": "{{ csrf_token }}",
@@ -110,6 +110,7 @@
         tag_id: title,
         media_id: id,
         link_id: id,
+        notification_id: id,
       }),
     }).then((response) => {
       if (!response.ok) {

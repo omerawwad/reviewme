@@ -2,6 +2,7 @@ from calendar import c
 from email import message
 import json
 from os import name
+import re
 from urllib import response
 from django.http import JsonResponse
 from django.shortcuts import render
@@ -15,7 +16,7 @@ from pygments import highlight
 
 from .utils import dbcomm
 from .utils import conversion
-from .utils import Auth
+from .utils import auth
 from .utils import services
 from .utils import request_parser
 
@@ -25,8 +26,8 @@ def index(request):
     # dbcomm.create_item(name='Test Item', description='This is a test item.', user_id=1, media=['https://image_example.com', 'https://image_example2.com'], links=['https://example.com', 'https://example2.com'],tags=['tag1', 'tag2'])
     # print(dbcomm.get_items())
     user = request.user
-    auth = Auth.is_authenticated(request)
-    print(auth)
+    authnticate = auth.get_user_id(request)
+    print(authnticate)
     return render(request, 'reviewme/index.html')
 
 # Public APIs ( items -> Fetch All Items,  item/<item_id> -> Fetch Item by ID )
@@ -139,7 +140,39 @@ def get_user_answers(request, user_id):
         return JsonResponse({'error': response['error']}, status=404)
     return JsonResponse(response, safe=False)
 
+@login_required
+def notifications(request):
+    if request.method != 'GET':
+        return JsonResponse({'error': 'Invalid request method'}, status=405)
     
+    user_id = auth.get_user_id(request)
+    if not user_id:
+        return JsonResponse({'error': 'User not authenticated'}, status=401)
+    
+    response = services.get_notifications(user_id=user_id)
+    if 'error' in response:
+        return JsonResponse({'error': response['error']}, status=404)
+    return JsonResponse(response, safe=False)
+
+# @csrf_exempt
+@login_required
+def mark_notification_as_read(request):
+    if request.method != 'POST':
+        return JsonResponse({'error': 'Invalid request method'}, status=405)
+    
+    user_id = auth.get_user_id(request)
+    if not user_id:
+        return JsonResponse({'error': 'User not authenticated'}, status=404)
+    data = json.loads(request.body)
+    notification_id = request_parser.get_notification_id(data)
+    if notification_id is None:
+        return JsonResponse({'error': 'Notification ID is required'}, status=400)
+    
+    response = services.mark_notification_as_read(notification_id=notification_id)
+    if 'error' in response:
+        return JsonResponse({'error': response['error']}, status=404)
+    return JsonResponse(response, safe=False)
+
 def items(request):
     if request.method != 'GET':
         return JsonResponse({'error': 'Invalid request method'}, status=405)

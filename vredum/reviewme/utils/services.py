@@ -1,4 +1,4 @@
-from ..models import Review, Item, Question, Answer
+from ..models import Review, Item, Question, Answer, ReviewLike, QuestionUpvote, AnswerLike, Notification
 from django.core.paginator import Paginator
 def get_all_reviews(page=1, page_size=10, sort_by='created_at,desc'):
     """
@@ -59,7 +59,7 @@ def search_items(query, page=1, page_size=10, sort_by='created_at,desc'):
     """
     sort_field, order = sort_by.split(',') if sort_by else ('created_at', 'desc')
     try:
-        items = Item.objects.filter(name__icontains=query)
+        items = Item.objects.filter(name__icontains=query).order_by(f'-{sort_field}' if order == 'desc' else sort_field)
         if not items:
             return {'error': 'No items found', 'items': []}
         paginator = Paginator(items, page_size)
@@ -120,7 +120,7 @@ def get_item_with_hl_question(question_id):
     
 def get_user_reviews(user_id, page=1, page_size=10, sort_by='created_at,desc'):
     try:
-        reviews = Review.objects.filter(user_id=user_id)
+        reviews = Review.objects.filter(user_id=user_id).order_by(f'-{sort_by.split(",")[0]}' if sort_by.split(",")[1] == 'desc' else sort_by.split(",")[0])
         paginator = Paginator(reviews, page_size)
         try:
             paginated_reviews = paginator.page(page)
@@ -139,7 +139,7 @@ def get_user_reviews(user_id, page=1, page_size=10, sort_by='created_at,desc'):
     
 def get_user_questions(user_id, page=1, page_size=10, sort_by='created_at,desc'):
     try:
-        questions = Question.objects.filter(created_by=user_id)
+        questions = Question.objects.filter(created_by=user_id).order_by(f'-{sort_by.split(",")[0]}' if sort_by.split(",")[1] == 'desc' else sort_by.split(",")[0])
         paginator = Paginator(questions, page_size)
         try:
             paginated_questions = paginator.page(page)
@@ -157,7 +157,7 @@ def get_user_questions(user_id, page=1, page_size=10, sort_by='created_at,desc')
 
 def get_user_answers(user_id, page=1, page_size=10, sort_by='created_at,desc'):
     try:
-        answers = Answer.objects.filter(created_by=user_id)
+        answers = Answer.objects.filter(created_by=user_id).order_by(f'-{sort_by.split(",")[0]}' if sort_by.split(",")[1] == 'desc' else sort_by.split(",")[0])
         paginator = Paginator(answers, page_size)
         try:
             paginated_answers = paginator.page(page)
@@ -172,3 +172,23 @@ def get_user_answers(user_id, page=1, page_size=10, sort_by='created_at,desc'):
         }
     except Exception as e:
         return {'error': str(e), 'answers': []}
+    
+def get_notifications(user_id):
+    try:
+        notifications = Notification.objects.filter(user_id=user_id, read=False).order_by('-created_at')
+        return {
+            'notifications': [notification.serialize() for notification in notifications],
+            'total_notifications': notifications.count()
+        }
+    except Exception as e:
+        return {'error': str(e), 'notifications': []}
+    
+def mark_notification_as_read(notification_id):
+    try:
+        notification = Notification.objects.get(id=notification_id)
+        notification.mark_as_read()
+        return {'success': True, 'message': 'Notification marked as read'}
+    except Notification.DoesNotExist:
+        return {'error': 'Notification not found'}
+    except Exception as e:
+        return {'error': str(e)}

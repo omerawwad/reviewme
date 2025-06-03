@@ -183,9 +183,11 @@ def get_notifications(user_id):
     except Exception as e:
         return {'error': str(e), 'notifications': []}
     
-def mark_notification_as_read(notification_id):
+def mark_notification_as_read(user_id, notification_id):
     try:
         notification = Notification.objects.get(id=notification_id)
+        if notification.user_id != user_id:
+            return {'error': 'You do not have permission to mark this notification as read'}
         notification.mark_as_read()
         return {'success': True, 'message': 'Notification marked as read'}
     except Notification.DoesNotExist:

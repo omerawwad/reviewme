@@ -168,7 +168,7 @@ def mark_notification_as_read(request):
     if notification_id is None:
         return JsonResponse({'error': 'Notification ID is required'}, status=400)
     
-    response = services.mark_notification_as_read(notification_id=notification_id)
+    response = services.mark_notification_as_read( user_id=user_id, notification_id=notification_id)
     if 'error' in response:
         return JsonResponse({'error': response['error']}, status=404)
     return JsonResponse(response, safe=False)

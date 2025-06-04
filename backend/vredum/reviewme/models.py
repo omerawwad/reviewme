@@ -274,7 +274,7 @@ class Notification(models.Model):
         return {
             'id': self.id,
             'user': self.user.username,
-            'message': self.message,
+            'message': self.get_message(),
             'created_at': self.created_at,
             'read': self.read,
             'type': self.type,
@@ -286,3 +286,12 @@ class Notification(models.Model):
     def mark_as_read(self):
         self.read = True
         self.save()
+
+    def get_message(self):
+        if self.type == 'review':
+            return f"{self.user.username} liked your review on {self.review.item.name}: {self.review.title}"
+        elif self.type == 'question':
+            return f"{self.user.username} upvoted your question on {self.question.item.name}: {self.question.text}"
+        elif self.type == 'answer':
+            return f"{self.user.username} liked your answere on {self.answer.question.item.name}: {self.answer.text}"
+        return "Notification"

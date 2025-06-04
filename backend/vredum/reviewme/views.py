@@ -9,6 +9,11 @@ from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
 
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+from rest_framework_simplejwt.views import TokenObtainPairView
 
 
 
@@ -18,6 +23,19 @@ from .utils import auth
 from .utils import services
 from .utils import request_parser
 
+class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
+    @classmethod
+    def get_token(cls, user):
+        token = super().get_token(user)
+
+       
+        t # Add custom claimsoken['username'] = user.username
+        # token['email'] = user.email
+
+        return token
+
+class MyTokenObtainPairView(TokenObtainPairView):
+    serializer_class = MyTokenObtainPairSerializer
 
 # Create your views here.
 def index(request):
@@ -30,146 +48,142 @@ def index(request):
 
 # Public APIs ( items -> Fetch All Items,  item/<item_id> -> Fetch Item by ID )
 
+@api_view(['GET'])
 def reviews(request):
     if request.method != 'GET':
-        return JsonResponse({'error': 'UNAUTHORIZED'}, status=401)
+        return Response({'error': 'UNAUTHORIZED'}, status=401)
     
     page, size = request_parser.get_page_details(request.GET)
     response = services.get_all_reviews(page=page, page_size=size)
 
     if 'error' in response:
-        return JsonResponse({'error': response['error']}, status=404)
-    return JsonResponse(response, safe=False)
+        return Response({'error': response['error']}, status=404)
+    return Response(response)
 
+@api_view(['GET'])
 def get_items_by_tag(request, tag_name):
     if request.method != 'GET':
-        return JsonResponse({'error': 'Invalid request method'}, status=405)
+        return Response({'error': 'Invalid request method'}, status=405)
     
     page, size = request_parser.get_page_details(request.GET)
     response = services.get_items_by_tag(tag_name=tag_name, page=page, page_size=size)
 
     if 'error' in response:
-        return JsonResponse({'error': response['error']}, status=404)
-    return JsonResponse(response, safe=False)
+        return Response({'error': response['error']}, status=404)
+    return Response(response)
 
+@api_view(['GET'])
 def search_items(request):
     if request.method != 'GET':
-        return JsonResponse({'error': 'Invalid request method'}, status=405)
-    
-    if not request.GET.get('search'):
-        return JsonResponse({'error': 'Search query is required'}, status=404)
-
-    search_query = request.GET.get('search')
-    page, size = request_parser.get_page_details(request.GET)
-    response = services.search_items(search_query=search_query, page=page, page_size=size)
-
-    if 'error' in response:
-        return JsonResponse({'error': response['error']}, status=404)
-    return JsonResponse(response, safe=False)
-
-def search_items(request):
-    if request.method != 'GET':
-        return JsonResponse({'error': 'Invalid request method'}, status=405)
+        return Response({'error': 'Invalid request method'}, status=405)
     if not request.GET.get('query'):
-        return JsonResponse({'error': 'Query parameter is required'}, status=404)
+        return Response({'error': 'Query parameter is required'}, status=404)
     query = request.GET.get('query', '').strip()
     page, size = request_parser.get_page_details(request.GET)
 
     response = services.search_items(query=query, page=page, page_size=size)
     if 'error' in response:
-        return JsonResponse({'error': response['error']}, status=404)
-    return JsonResponse(response, safe=False)
+        return Response({'error': response['error']}, status=404)
+    return Response(response)
 
+@api_view(['GET'])
 def get_item(request, item_id):
     if request.method != 'GET':
-        return JsonResponse({'error': 'Invalid request method'}, status=405)
+        return Response({'error': 'Invalid request method'}, status=405)
     
     response = services.get_item(item_id=item_id)
 
     if 'error' in response:
-        return JsonResponse({'error': response['error']}, status=404)
-    return JsonResponse(response, safe=False)
+        return Response({'error': response['error']}, status=404)
+    return Response(response)
 
+@api_view(['GET'])
 def review(request, review_id):
     if request.method != 'GET':
-        return JsonResponse({'error': 'Invalid request method'}, status=405)
+        return Response({'error': 'Invalid request method'}, status=405)
     
     response = services.get_item_with_hl_review(review_id=review_id)
     if 'error' in response:
-        return JsonResponse({'error': response['error']}, status=404)
-    return JsonResponse(response, safe=False)
+        return Response({'error': response['error']}, status=404)
+    return Response(response)
 
+@api_view(['GET'])
 def question(request, question_id):
     if request.method != 'GET':
-        return JsonResponse({'error': 'Invalid request method'}, status=405)
+        return Response({'error': 'Invalid request method'}, status=405)
     
     response = services.get_item_with_hl_question(question_id=question_id)
     if 'error' in response:
-        return JsonResponse({'error': response['error']}, status=404)
-    return JsonResponse(response, safe=False)
+        return Response({'error': response['error']}, status=404)
+    return Response(response)
     
+@api_view(['GET'])
 def get_user_reviews(request, user_id):
     if request.method != 'GET':
-        return JsonResponse({'error': 'Invalid request method'}, status=405)
+        return Response({'error': 'Invalid request method'}, status=405)
     
     page, size = request_parser.get_page_details(request.GET)
     response = services.get_user_reviews(user_id=user_id, page=page, page_size=size)
     if 'error' in response:
-        return JsonResponse({'error': response['error']}, status=404)
-    return JsonResponse(response, safe=False)
+        return Response({'error': response['error']}, status=404)
+    return Response(response)
 
+@api_view(['GET'])
 def get_user_questions(request, user_id):
     if request.method != 'GET':
-        return JsonResponse({'error': 'Invalid request method'}, status=405)
+        return Response({'error': 'Invalid request method'}, status=405)
     
     page, size = request_parser.get_page_details(request.GET)
     response = services.get_user_questions(user_id=user_id, page=page, page_size=size)
     if 'error' in response:
-        return JsonResponse({'error': response['error']}, status=404)
-    return JsonResponse(response, safe=False)
+        return Response({'error': response['error']}, status=404)
+    return Response(response)
 
+@api_view(['GET'])
 def get_user_answers(request, user_id):
     if request.method != 'GET':
-        return JsonResponse({'error': 'Invalid request method'}, status=405)
+        return Response({'error': 'Invalid request method'}, status=405)
     
     page, size = request_parser.get_page_details(request.GET)
     response = services.get_user_answers(user_id=user_id, page=page, page_size=size)
     if 'error' in response:
-        return JsonResponse({'error': response['error']}, status=404)
-    return JsonResponse(response, safe=False)
+        return Response({'error': response['error']}, status=404)
+    return Response(response)
 
+@api_view(['GET'])
 @login_required
 def notifications(request):
     if request.method != 'GET':
-        return JsonResponse({'error': 'Invalid request method'}, status=405)
+        return Response({'error': 'Invalid request method'}, status=405)
     
     user_id = auth.get_user_id(request)
     if not user_id:
-        return JsonResponse({'error': 'User not authenticated'}, status=401)
+        return Response({'error': 'User not authenticated'}, status=401)
     
     response = services.get_notifications(user_id=user_id)
     if 'error' in response:
-        return JsonResponse({'error': response['error']}, status=404)
-    return JsonResponse(response, safe=False)
+        return Response({'error': response['error']}, status=404)
+    return Response(response)
 
+@api_view(['POST'])
 # @csrf_exempt
 @login_required
 def mark_notification_as_read(request):
     if request.method != 'POST':
-        return JsonResponse({'error': 'Invalid request method'}, status=405)
+        return Response({'error': 'Invalid request method'}, status=405)
     
     user_id = auth.get_user_id(request)
     if not user_id:
-        return JsonResponse({'error': 'User not authenticated'}, status=404)
+        return Response({'error': 'User not authenticated'}, status=404)
     data = json.loads(request.body)
     notification_id = request_parser.get_notification_id(data)
     if notification_id is None:
-        return JsonResponse({'error': 'Notification ID is required'}, status=400)
+        return Response({'error': 'Notification ID is required'}, status=400)
     
     response = services.mark_notification_as_read( user_id=user_id, notification_id=notification_id)
     if 'error' in response:
-        return JsonResponse({'error': response['error']}, status=404)
-    return JsonResponse(response, safe=False)
+        return Response({'error': response['error']}, status=404)
+    return Response(response, safe=False)
 
 def items(request):
     if request.method != 'GET':

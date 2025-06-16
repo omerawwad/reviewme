@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useContext } from "react";
 import { Link } from "react-router-dom";
 import "../styles/NavBar.css";
 import { MdOutlineRateReview } from "react-icons/md";
@@ -6,6 +6,7 @@ import { IoSearch } from "react-icons/io5";
 import { MdKeyboardCommandKey } from "react-icons/md";
 import { useLocation } from "react-router-dom";
 import { useRef } from "react";
+import { useAuth } from "../context/AuthContext";
 
 const userAgent = navigator.userAgent.toLowerCase();
 const isMacAgent = /macintosh|mac os x/i.test(userAgent);
@@ -14,8 +15,13 @@ const isMobileAgent = /iphone|android|mobile/i.test(userAgent);
 const innerWidth = window.innerWidth;
 const isMobileScreen = innerWidth <= 850; // TODO: Make this dynamic
 
-function NavBar({ children, user = null, links = [] }) {
+function NavBar({ children, links = [] }) {
   const inputRef = useRef(null);
+  const { user, isAuthenticated, logoutUser } = useAuth();
+
+  // console.log("isAuthenticated in NavBar:", isAuthenticated);
+  // console.log("user in NavBar", user);
+
   useEffect(() => {
     const handleKeyDown = (e) => {
       const cmdOrCtrl = isMacAgent ? e.metaKey : e.ctrlKey;
@@ -38,7 +44,11 @@ function NavBar({ children, user = null, links = [] }) {
       </div>
       <div className="navbar-tools">
         <SearchWithKbd inputRef={inputRef} />
-        <NavbarToolsSignedOut />
+        {isAuthenticated ? (
+          <NavbarToolsSignedIn user={user} logoutUser={logoutUser} />
+        ) : (
+          <NavbarToolsSignedOut />
+        )}
       </div>
     </div>
   );
@@ -60,8 +70,6 @@ function NavBarLinks({ links }) {
   const location = useLocation();
 
   useEffect(() => {
-    // const location = window.location.pathname;
-    // console.log("Current location:", location);
     setSelectedTab(location.pathname);
   }, [location]);
   return (
@@ -95,15 +103,18 @@ function NavbarToolsSignedOut() {
   );
 }
 
-function NavbarToolsSignedIn({ user }) {
+function NavbarToolsSignedIn({ user, logoutUser }) {
+  // console.log("User in NavbarToolsSignedIn:", logoutUser);
   return (
     <div className="navbar-links">
-      <Link className="navbar-link" to="/profile">
-        {user.username}
-      </Link>
-      <Link className="navbar-link" to="/logout">
-        Logout
-      </Link>
+      {user && (
+        <Link className="navbar-link" to="/profile">
+          {user.username}
+        </Link>
+      )}
+      <p className="navbar-link" to="/login" onClick={() => logoutUser()}>
+        Log out
+      </p>
     </div>
   );
 }

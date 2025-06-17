@@ -18,6 +18,8 @@
   font-weight: bold;
   padding: 5px;
   font-size: 24px;
+  display: flex;
+  align-items: center;
 }
 
 .navbar-logo-icon {
@@ -53,10 +55,12 @@
 .navbar-tools {
   display: flex;
   gap: 20px;
+  padding-top: 10px;
 }
 
 .navbar-tools .navbar-link {
   font-size: 12px;
+  /* padding-top: 6px; */
 }
 
 .nav-bar-search {
@@ -72,6 +76,7 @@
   padding: 5px;
   border: none;
   border-radius: 10px;
+  background-color: transparent;
 }
 
 .navbar-input-field:focus {
@@ -80,7 +85,9 @@
 }
 
 .navbar-input-kbd {
-  display: inline-block;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   padding: 2px;
   background-color: transparent;
   border-radius: 5px;

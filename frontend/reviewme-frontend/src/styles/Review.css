@@ -1,0 +1,55 @@
+.review-card {
+  border-bottom: 1px solid #333;
+  padding: 10px;
+  width: 100%;
+  max-width: 400px;
+}
+.review-card-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  color: #111;
+  font-weight: bold;
+  padding: 5px 0;
+}
+
+.review-card-header-title {
+  display: flex;
+  gap: 10px;
+  padding-right: 10px;
+}
+
+.review-title {
+  display: flex;
+  flex-wrap: wrap;
+  max-width: 300px;
+  gap: 10px;
+  padding-right: 10px;
+  word-break: break-word;
+}
+
+.review-card-header-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.share-icon {
+  margin: auto;
+}
+.review-card-info {
+  display: flex;
+  gap: 10px;
+  color: #333;
+  font-size: 0.8rem;
+}
+
+.review-card-body {
+  padding: 10px;
+  margin: 10px 0;
+  background-color: #f9f9f9;
+}
+
+.review-description {
+  font-size: 0.9rem;
+  color: #555;
+}

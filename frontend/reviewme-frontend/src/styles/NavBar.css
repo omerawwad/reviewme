@@ -72,6 +72,11 @@
   font-size: 12px;
 }
 
+.navbar-notification {
+  font-size: 10px;
+  padding: 5px;
+}
+
 .navbar-input-field {
   padding: 5px;
   border: none;

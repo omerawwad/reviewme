@@ -7,6 +7,10 @@ import { MdKeyboardCommandKey } from "react-icons/md";
 import { useLocation } from "react-router-dom";
 import { useRef } from "react";
 import { useAuth } from "../context/AuthContext";
+import { Badge } from "antd";
+import { FiLogOut } from "react-icons/fi";
+import { IoMdNotificationsOutline } from "react-icons/io";
+import { FiUser } from "react-icons/fi";
 
 const userAgent = navigator.userAgent.toLowerCase();
 const isMacAgent = /macintosh|mac os x/i.test(userAgent);
@@ -103,17 +107,20 @@ function NavbarToolsSignedOut() {
   );
 }
 
-function NavbarToolsSignedIn({ user, logoutUser }) {
+function NavbarToolsSignedIn({ user, logoutUser, notificationCount }) {
   // console.log("User in NavbarToolsSignedIn:", logoutUser);
   return (
     <div className="navbar-links">
+      {!isMobileAgent && (
+        <NotificationBell notificationCount={notificationCount} />
+      )}
       {user && (
         <Link className="navbar-link" to="/profile">
-          {user.username}
+          <FiUser className="navbar-user-icon" size={20} />
         </Link>
       )}
       <p className="navbar-link" to="/login" onClick={() => logoutUser()}>
-        Log out
+        <FiLogOut className="navbar-logout-icon" size={20} />
       </p>
     </div>
   );
@@ -137,6 +144,21 @@ function SearchWithKbd({ inputRef }) {
           </kbd>
         )}
       </div>
+    </div>
+  );
+}
+
+function NotificationBell({ notificationCount = 3 }) {
+  return (
+    <div className="navbar-notification">
+      <Badge
+        count={notificationCount}
+        offset={[0, 0]}
+        size="small"
+        className="navbar-notification-badge"
+      >
+        <IoMdNotificationsOutline size={20} />
+      </Badge>
     </div>
   );
 }

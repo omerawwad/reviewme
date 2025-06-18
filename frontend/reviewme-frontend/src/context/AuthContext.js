@@ -27,7 +27,6 @@ export const AuthProvider = ({ children }) => {
   const navigate = useNavigate();
 
   const loginUser = async (credentials) => {
-    console.log("Logging in with credentials:", credentials);
     try {
       const response = await fetch(BACKEND_URL + "/token/", {
         method: "POST",

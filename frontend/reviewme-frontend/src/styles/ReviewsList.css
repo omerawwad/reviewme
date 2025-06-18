@@ -1,0 +1,15 @@
+.reviews-list-skeleton {
+  display: flex;
+  flex-direction: column;
+  gap: 3rem;
+}
+
+.reviews-list {
+  max-width: 400px;
+}
+
+@media (max-width: 500px) {
+  .reviews-list {
+    max-width: 350px;
+  }
+}

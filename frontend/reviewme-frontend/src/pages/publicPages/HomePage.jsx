@@ -6,7 +6,6 @@ import ReviewsList from "../../components/lists/ReviewsList";
 function HomePage() {
   return (
     <CenterBody>
-      <p> Welcome To Home </p>
       <ReviewsList />
     </CenterBody>
   );

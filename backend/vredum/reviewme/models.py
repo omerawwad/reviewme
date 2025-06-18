@@ -49,6 +49,8 @@ class Item(models.Model):
             'description': self.description[:50] + '...',
             'created_at': self.created_at,
             'added_by': self.added_by.username,
+            'tags': [tag.name for tag in self.tags.all()],
+            'average_rating': self.get_average_rating(),
         }
     
     def preview(self):
@@ -96,14 +98,18 @@ class Review(models.Model):
         return self.title
     
     def serialize(self):
+        username = self.user.username if not self.anonymous else 'Anonymous'
         return {
             'id': self.id,
             'rating': self.rating,
             'title': self.title,
             'description': self.description,
             'created_at': self.created_at,
-            'user': self.user.username,
+            'user': username,
             'item_id': self.item.id,
+            'item': self.item.brief(),
+            'total_likes': self.likes.count(),
+            'media': [media.url for media in self.media.all()],
         }
     
 class Link(models.Model):
@@ -116,7 +122,7 @@ class Link(models.Model):
 class Media(models.Model):
     url = models.URLField()
     item = models.ForeignKey(Item, on_delete=models.CASCADE, related_name='media')
-    review = models.ForeignKey(Review, on_delete=models.CASCADE, related_name='links', null=True, blank=True)
+    review = models.ForeignKey(Review, on_delete=models.CASCADE, related_name='media', null=True, blank=True)
 
     def __str__(self):
         return self.url

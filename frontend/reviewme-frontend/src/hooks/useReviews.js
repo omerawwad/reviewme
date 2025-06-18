@@ -5,18 +5,34 @@ const useReviews = (page = 1, size = 10, pollingInterval = 5000) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [pageInfo, setPageInfo] = useState({
-    total: 1,
+    total: 0,
     current: page,
     size: size,
+    totalReviews: 0,
   });
 
   const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
+  const setPage = (newPage) => {
+    if (newPage < 1 || newPage > pageInfo.total) {
+      console.warn("Invalid page number:", newPage);
+      return;
+    }
+    setPageInfo((prev) => ({ ...prev, current: newPage }));
+    console.log("Setting page to:", newPage);
+  };
+
   const fetchReviews = async () => {
+    // console.log(
+    //   "Fetching reviews for page:",
+    //   pageInfo.current,
+    //   "size:",
+    //   pageInfo.size
+    // );
     try {
       setLoading(true);
       const response = await fetch(
-        `${BACKEND_URL}/reviews?page=${page}&size=${size}`,
+        `${BACKEND_URL}/reviews?page=${pageInfo.current}&size=${pageInfo.size}`,
         {
           method: "GET",
           headers: {
@@ -35,9 +51,10 @@ const useReviews = (page = 1, size = 10, pollingInterval = 5000) => {
       // console.log("Fetched reviews data:", data);
       setReviews(data.reviews || []);
       setPageInfo({
-        total: data.totalPages || 1,
+        total: data.total_pages || 1,
         current: data.page,
         size: data.page_size || size,
+        totalReviews: data.total_reviews || 0,
       });
       setError(null);
     } catch (err) {
@@ -60,7 +77,8 @@ const useReviews = (page = 1, size = 10, pollingInterval = 5000) => {
     loading,
     error,
     pageInfo,
-    refetch: fetchReviews, // Expose manual refetch function
+    refetch: fetchReviews,
+    setPage,
   };
 };
 

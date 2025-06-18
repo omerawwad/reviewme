@@ -40,6 +40,7 @@ export const AuthProvider = ({ children }) => {
         const data = await response.json();
         setUser(jwtDecode(data.access));
         localStorage.setItem("authTokens", JSON.stringify(data));
+        setAuthTokens(data);
         setIsAuthenticated(true);
         navigate("/");
       } else {
@@ -106,6 +107,7 @@ export const AuthProvider = ({ children }) => {
         loginUser,
         logoutUser,
         updateToken,
+        authTokens,
       }}
     >
       {children}

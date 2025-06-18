@@ -55,7 +55,9 @@ def reviews(request):
         return Response({'error': 'UNAUTHORIZED'}, status=401)
     
     page, size = request_parser.get_page_details(request.GET)
-    response = services.get_all_reviews(page=page, page_size=size)
+    print("user",request.user)
+    user = request.user if request.user.is_authenticated else None 
+    response = services.get_all_reviews(page=page, page_size=size, user=user)
 
     if 'error' in response:
         return Response({'error': response['error']}, status=404)

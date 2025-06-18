@@ -1,12 +1,14 @@
-import React from "react";
+import React, { useEffect } from "react";
 import useReviews from "../../hooks/useReviews";
 import Review from "../objects/Review";
 import PaginationControls from "../smallComponents/PaginationControls";
 import ReviewsSkeleton from "../../pages/stillPages/ReviewsSkeleton";
 
 import "../../styles/ReviewsList.css";
+import { useAuth } from "../../context/AuthContext";
 function ReviewsList() {
   const { reviews, loading, error, pageInfo, refetch, setPage } = useReviews();
+
   if (loading) return <ReviewsList.Skeleton />;
   if (error) return <div>Error: {error}</div>;
 

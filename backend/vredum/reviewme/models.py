@@ -112,6 +112,24 @@ class Review(models.Model):
             'media': [media.url for media in self.media.all()],
         }
     
+    def authSerialize(self, user):
+        return {
+            'id': self.id,
+            'rating': self.rating,
+            'title': self.title,
+            'description': self.description,
+            'created_at': self.created_at,
+            'user': self.user.username if not self.anonymous else 'Anonymous',
+            'item_id': self.item.id,
+            'item': self.item.brief(),
+            'total_likes': self.likes.count(),
+            'is_liked': self.isLikedByUser(user),
+            'media': [media.url for media in self.media.all()],
+        }
+    
+    def isLikedByUser(self, user):
+        return self.likes.filter(user=user).exists()
+    
 class Link(models.Model):
     url = models.URLField()
     item = models.ForeignKey(Item, on_delete=models.CASCADE, related_name='links')

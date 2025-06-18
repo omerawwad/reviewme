@@ -66,6 +66,11 @@
 .like-icon {
   margin: auto;
 }
+
+.liked {
+  color: #ff4081;
+}
+
 .share-icon {
   margin: auto;
 }

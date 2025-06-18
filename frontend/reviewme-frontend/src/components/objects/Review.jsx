@@ -1,4 +1,4 @@
-import React from "react";
+import React, { use, useEffect } from "react";
 import "../../styles/Review.css";
 import PropTypes from "prop-types";
 import { FaRegShareFromSquare } from "react-icons/fa6";
@@ -6,8 +6,10 @@ import { FaHeart } from "react-icons/fa";
 import { RatingGroup } from "@chakra-ui/react";
 import { Provider } from "../ui/provider";
 import { LightMode } from "../ui/color-mode";
+import { useAuth } from "../../context/AuthContext";
 
 function Review({ review }) {
+  //   console.log(review);
   return (
     <div className="review-card">
       <div className="review-card-header">
@@ -15,7 +17,10 @@ function Review({ review }) {
           <span className="review-title">{review.title}</span>
         </div>
         <div className="review-card-header-actions">
-          <ReviewLikes liked={review.liked} totalLikes={review.total_likes} />
+          <ReviewLikes
+            liked={review.is_liked}
+            totalLikes={review.total_likes}
+          />
           <StarRating rating={review.rating} />
           <FaRegShareFromSquare className="share-icon" />
         </div>
@@ -89,7 +94,7 @@ function ReviewLikes({ liked, onClick, totalLikes }) {
     <div className="like-button-container">
       <span className="like-count">{totalLikes > 0 ? totalLikes : 0}</span>
 
-      <FaHeart className="like-icon" />
+      <LikeReviewButton liked={liked} onClick={onClick} />
     </div>
   );
 }
@@ -106,6 +111,14 @@ function ReviewMedia({ media }) {
         />
       ))}
     </div>
+  );
+}
+
+function LikeReviewButton({ liked, onClick }) {
+  return (
+    <button className="like-review-button" onClick={onClick}>
+      <FaHeart className={`like-icon ${liked ? "liked" : ""}`} />
+    </button>
   );
 }
 

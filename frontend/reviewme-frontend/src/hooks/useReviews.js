@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useAuth } from "../context/AuthContext";
 
 const useReviews = (page = 1, size = 10, pollingInterval = 5000) => {
   const [reviews, setReviews] = useState([]);
@@ -13,13 +14,16 @@ const useReviews = (page = 1, size = 10, pollingInterval = 5000) => {
 
   const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
+  const { authTokens, isAuthenticated } = useAuth();
+  // console.log("Auth token in useReviews:", authTokens);
+
   const setPage = (newPage) => {
     if (newPage < 1 || newPage > pageInfo.total) {
-      console.warn("Invalid page number:", newPage);
+      // console.warn("Invalid page number:", newPage);
       return;
     }
     setPageInfo((prev) => ({ ...prev, current: newPage }));
-    console.log("Setting page to:", newPage);
+    // console.log("Setting page to:", newPage);
   };
 
   const fetchReviews = async () => {
@@ -29,16 +33,22 @@ const useReviews = (page = 1, size = 10, pollingInterval = 5000) => {
     //   "size:",
     //   pageInfo.size
     // );
+    const header =
+      isAuthenticated && authTokens
+        ? {
+            Authorization: `Bearer ${authTokens.access}`,
+            "Content-Type": "application/json",
+          }
+        : {
+            "Content-Type": "application/json",
+          };
     try {
       setLoading(true);
       const response = await fetch(
         `${BACKEND_URL}/reviews?page=${pageInfo.current}&size=${pageInfo.size}`,
         {
           method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            // Authorization: ``,
-          },
+          headers: header,
         }
       );
 
@@ -66,11 +76,13 @@ const useReviews = (page = 1, size = 10, pollingInterval = 5000) => {
   };
 
   useEffect(() => {
+    // console.log("isAuthenticated in useReviews:", isAuthenticated);
+    // console.log("authTokens in useReviews:", authTokens);
     fetchReviews();
 
     // const intervalId = setInterval(fetchReviews, pollingInterval);
     // return () => clearInterval(intervalId);
-  }, [page, size]);
+  }, [page, size, isAuthenticated]);
 
   return {
     reviews,

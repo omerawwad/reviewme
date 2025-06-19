@@ -1,16 +1,19 @@
 import React, { useEffect, useContext } from "react";
-import { Link } from "react-router-dom";
+import useNotifications from "../hooks/useNotifications";
+import useSearch from "../hooks/useSearch";
+import { Link, useNavigate } from "react-router-dom";
 import "../styles/NavBar.css";
 import { MdOutlineRateReview } from "react-icons/md";
 import { IoSearch } from "react-icons/io5";
 import { MdKeyboardCommandKey } from "react-icons/md";
 import { useLocation } from "react-router-dom";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import { Badge } from "antd";
 import { FiLogOut } from "react-icons/fi";
 import { IoMdNotificationsOutline } from "react-icons/io";
 import { FiUser } from "react-icons/fi";
+import { Popover } from "antd";
 
 const userAgent = navigator.userAgent.toLowerCase();
 const isMacAgent = /macintosh|mac os x/i.test(userAgent);
@@ -107,13 +110,11 @@ function NavbarToolsSignedOut() {
   );
 }
 
-function NavbarToolsSignedIn({ user, logoutUser, notificationCount }) {
+function NavbarToolsSignedIn({ user, logoutUser }) {
   // console.log("User in NavbarToolsSignedIn:", logoutUser);
   return (
     <div className="navbar-links">
-      {!isMobileAgent && (
-        <NotificationBell notificationCount={notificationCount} />
-      )}
+      {!isMobileAgent && <NotificationBell />}
       {user && (
         <Link className="navbar-link" to="/profile">
           <FiUser className="navbar-user-icon" size={20} />
@@ -127,38 +128,129 @@ function NavbarToolsSignedIn({ user, logoutUser, notificationCount }) {
 }
 
 function SearchWithKbd({ inputRef }) {
-  //   console.log(isMobileScreen);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [finalQuery, setFinalQuery] = useState("");
+  const navigate = useNavigate();
+  const { setQuery } = useSearch(finalQuery);
+
+  const handleSearch = (e) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      // Navigate to search results page with query
+      setFinalQuery(searchQuery.trim());
+      setQuery(searchQuery.trim());
+      navigate(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
+    }
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter") {
+      handleSearch(e);
+    }
+  };
+
   return (
     <div className="navbar-input">
-      <div className="nav-bar-search">
+      <form onSubmit={handleSearch} className="nav-bar-search">
         <IoSearch />
         <input
           ref={inputRef}
           type="text"
           placeholder="Search Items..."
           className="navbar-input-field"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          onKeyDown={handleKeyDown}
         />
         {!isMobileAgent && (
           <kbd className="navbar-input-kbd">
             {isMacAgent ? <MdKeyboardCommandKey /> : "Ctrl "}K
           </kbd>
         )}
-      </div>
+      </form>
     </div>
   );
 }
 
-function NotificationBell({ notificationCount = 3 }) {
+function NotificationBell({}) {
+  const { notifications, loading, error, totalNotifications, refetch } =
+    useNotifications();
   return (
     <div className="navbar-notification">
-      <Badge
-        count={notificationCount}
-        offset={[0, 0]}
-        size="small"
-        className="navbar-notification-badge"
+      <Popover
+        content={
+          <NotivicationMenu
+            notifications={notifications}
+            loading={loading}
+            error={error}
+            totalNotifications={totalNotifications}
+          />
+        }
+        title={`Notifications (${totalNotifications})`}
+        placement="bottomRight"
+        trigger="click"
       >
-        <IoMdNotificationsOutline size={20} />
-      </Badge>
+        <Badge
+          count={totalNotifications}
+          offset={[0, 0]}
+          size="small"
+          className="navbar-notification-badge"
+        >
+          <IoMdNotificationsOutline size={20} />
+        </Badge>
+      </Popover>
+    </div>
+  );
+}
+
+function NotivicationMenu({
+  notifications = [],
+  loading,
+  error,
+  totalNotifications,
+}) {
+  return (
+    <div className="navbar-notification-menu">
+      {totalNotifications > 0 ? (
+        <NotificationList
+          notifications={notifications}
+          loading={loading}
+          error={error}
+        />
+      ) : (
+        <span>No new notifications</span>
+      )}
+    </div>
+  );
+}
+
+function NotificationList({ notifications, loading, error }) {
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div>Error: {error}</div>;
+
+  return (
+    <div>
+      {notifications.map((n) => (
+        <Notification notification={n} key={n.id} />
+      ))}
+    </div>
+  );
+}
+
+function Notification({ notification }) {
+  return (
+    <div className="notification-item">
+      <span>{notification.message.slice(0, 45) + "..."}</span>
+      <small>
+        {new Date(notification.created_at).toLocaleString("en-GB", {
+          day: "2-digit",
+          month: "short",
+          year: "numeric",
+          hour: "2-digit",
+          minute: "2-digit",
+          hour12: true,
+        })}
+      </small>
     </div>
   );
 }

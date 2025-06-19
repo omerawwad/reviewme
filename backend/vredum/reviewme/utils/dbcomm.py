@@ -349,6 +349,7 @@ def like_review(review_id, user_id):
     try:
         like = ReviewLike(user_id=user_id, review_id=review_id)
         like.save()
+        notification = f"User {user_id} liked review '{review.title}'."
         print(f"User {user_id} liked review '{review.title}'.")
     except Exception as e:
         # print(f"Error liking review: {e}")

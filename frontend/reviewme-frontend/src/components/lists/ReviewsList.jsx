@@ -9,7 +9,7 @@ import { useAuth } from "../../context/AuthContext";
 function ReviewsList() {
   const { reviews, loading, error, pageInfo, refetch, setPage } = useReviews();
 
-  if (loading) return <ReviewsList.Skeleton />;
+  if (loading && pageInfo.current === 1) return <ReviewsList.Skeleton />;
   if (error) return <div>Error: {error}</div>;
 
   return (

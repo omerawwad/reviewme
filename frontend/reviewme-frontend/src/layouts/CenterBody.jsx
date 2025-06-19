@@ -1,3 +1,4 @@
+import { Outlet } from "react-router-dom";
 import NavBar from "../components/NavBar";
 import "../styles/CenterBody.css";
 
@@ -12,7 +13,9 @@ function CenterBody({ children, navBar = true }) {
     <>
       {navBar && <NavBar links={links} />}
       <div className="center-body">
-        <div className="center-body-content">{children}</div>
+        <div className="center-body-content">
+          <Outlet />
+        </div>
       </div>
     </>
   );

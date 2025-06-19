@@ -9,8 +9,8 @@ function PaginationControls({ pageInfo, setPage, refetch }) {
   const [isUpdated, setIsUpdated] = useState(false);
   const handlePageChange = (selectedPage) => {
     const newPage = selectedPage.page;
-    console.log("New page selected:", newPage);
-    console.log("Current page info:", pageInfo);
+    // console.log("New page selected:", newPage);
+    // console.log("Current page info:", pageInfo);
     if (newPage < 1 || newPage > pageInfo.total) {
       console.warn("Invalid page number:", newPage);
       return;

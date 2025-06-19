@@ -4,15 +4,23 @@ import App from "./App";
 import { createBrowserRouter } from "react-router-dom";
 import RegisterPage from "./pages/authPages/RegisterPage";
 import RootLayout from "./layouts/RootLayout";
+import CenterBody from "./layouts/CenterBody";
+import SearchPage from "./pages/SearchPage";
 
 const routes = createBrowserRouter([
   {
     element: <RootLayout />, // 🔁 Wraps all routes in AuthProvider
     children: [
-      { path: "/", element: <App /> },
       { path: "/login", element: <LoginPage /> },
       { path: "/register", element: <RegisterPage /> },
-      { path: "*", element: <NotFoundPage /> },
+      {
+        element: <CenterBody />,
+        children: [
+          { path: "/", element: <App /> },
+          { path: "/search", element: <SearchPage /> },
+          { path: "*", element: <NotFoundPage /> },
+        ],
+      },
     ],
   },
 ]);

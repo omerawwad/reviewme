@@ -5,7 +5,7 @@ import "../../styles/NotFoundPage.css";
 
 function NotFoundPage() {
   return (
-    <CenterBody>
+    <>
       <div className="not-found">
         <BiSolidError className="not-found-icon" />
         <p className="not-found-text">
@@ -13,7 +13,7 @@ function NotFoundPage() {
         </p>
         <p>Sorry, the page you are looking for does not exist.</p>
       </div>
-    </CenterBody>
+    </>
   );
 }
 

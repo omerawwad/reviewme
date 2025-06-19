@@ -75,6 +75,20 @@
 .navbar-notification {
   font-size: 10px;
   padding: 5px;
+  cursor: pointer;
+}
+
+.navbar-notification-menu {
+  width: 300px;
+}
+
+.notification-item {
+  display: flex;
+  flex-direction: column;
+  padding: 5px;
+  margin-top: 10px;
+  border-left: #f00 solid 1px;
+  font-size: 12px;
 }
 
 .navbar-input-field {

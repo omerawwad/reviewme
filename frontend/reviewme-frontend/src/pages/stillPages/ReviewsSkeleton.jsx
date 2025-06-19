@@ -1,11 +1,4 @@
-import {
-  Box,
-  HStack,
-  Skeleton,
-  SkeletonCircle,
-  SkeletonText,
-  Stack,
-} from "@chakra-ui/react";
+import { HStack, Skeleton, SkeletonText, Stack } from "@chakra-ui/react";
 
 function ReviewsSkeleton() {
   return (

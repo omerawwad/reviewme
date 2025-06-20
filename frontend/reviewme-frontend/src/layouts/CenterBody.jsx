@@ -5,7 +5,6 @@ import "../styles/CenterBody.css";
 const links = [
   { name: "Home", path: "/" },
   { name: "Top Reviews", path: "/top" },
-  { name: "Categories", path: "/categories" },
 ];
 
 function CenterBody({ children, navBar = true }) {

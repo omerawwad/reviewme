@@ -14,6 +14,7 @@ import { FiLogOut } from "react-icons/fi";
 import { IoMdNotificationsOutline } from "react-icons/io";
 import { FiUser } from "react-icons/fi";
 import { Popover } from "antd";
+import useMarkNotificationRead from "../hooks/useMarkNotificationRead";
 
 const userAgent = navigator.userAgent.toLowerCase();
 const isMacAgent = /macintosh|mac os x/i.test(userAgent);
@@ -175,6 +176,26 @@ function SearchWithKbd({ inputRef }) {
 function NotificationBell({}) {
   const { notifications, loading, error, totalNotifications, refetch } =
     useNotifications();
+
+  const [marked, setMarked] = useState(false);
+  function handleMarkAsRead() {
+    // console.log("Marking notifications as read");
+    setMarked(true);
+  }
+  useEffect(() => {
+    const interval = setInterval(() => {
+      refetch();
+    }, 60000);
+
+    return () => clearInterval(interval);
+  }, [refetch]);
+
+  useEffect(() => {
+    if (marked) {
+      refetch();
+      setMarked(false);
+    }
+  }, [marked]);
   return (
     <div className="navbar-notification">
       <Popover
@@ -184,6 +205,7 @@ function NotificationBell({}) {
             loading={loading}
             error={error}
             totalNotifications={totalNotifications}
+            onMarkAsRead={handleMarkAsRead}
           />
         }
         title={`Notifications (${totalNotifications})`}
@@ -208,6 +230,7 @@ function NotivicationMenu({
   loading,
   error,
   totalNotifications,
+  onMarkAsRead = () => console.log("Mark as read function not provided"),
 }) {
   return (
     <div className="navbar-notification-menu">
@@ -216,6 +239,7 @@ function NotivicationMenu({
           notifications={notifications}
           loading={loading}
           error={error}
+          onMarkAsRead={onMarkAsRead}
         />
       ) : (
         <span>No new notifications</span>
@@ -224,22 +248,33 @@ function NotivicationMenu({
   );
 }
 
-function NotificationList({ notifications, loading, error }) {
+function NotificationList({ notifications, loading, error, onMarkAsRead }) {
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error: {error}</div>;
 
   return (
     <div>
       {notifications.map((n) => (
-        <Notification notification={n} key={n.id} />
+        <Notification notification={n} key={n.id} onMarkAsRead={onMarkAsRead} />
       ))}
     </div>
   );
 }
 
-function Notification({ notification }) {
+function Notification({ notification, onMarkAsRead }) {
+  const { markAsRead, loading, error, success } = useMarkNotificationRead();
+
+  const handleClick = () => {
+    markAsRead(notification.id);
+    onMarkAsRead();
+  };
+
   return (
-    <div className="notification-item">
+    <div
+      className="notification-item"
+      onClick={handleClick}
+      style={{ cursor: "pointer", opacity: notification.read ? 0.6 : 1 }}
+    >
       <span>{notification.message.slice(0, 45) + "..."}</span>
       <small>
         {new Date(notification.created_at).toLocaleString("en-GB", {
@@ -251,6 +286,13 @@ function Notification({ notification }) {
           hour12: true,
         })}
       </small>
+      {/* {loading && (
+        <span style={{ marginLeft: 8, color: "#888" }}>Marking...</span>
+      )}
+      {error && <span style={{ marginLeft: 8, color: "red" }}>{error}</span>}
+      {success && (
+        <span style={{ marginLeft: 8, color: "green" }}>Marked!</span>
+      )} */}
     </div>
   );
 }

@@ -178,7 +178,9 @@ def mark_notification_as_read(request):
     user_id = auth.get_user_id(request)
     if not user_id:
         return Response({'error': 'User not authenticated'}, status=404)
-    data = json.loads(request.body)
+    # print("request body", request.GET)
+    # data = json.loads(request.body)
+    data = request.GET
     notification_id = request_parser.get_notification_id(data)
     if notification_id is None:
         return Response({'error': 'Notification ID is required'}, status=400)
@@ -186,7 +188,7 @@ def mark_notification_as_read(request):
     response = services.mark_notification_as_read( user_id=user_id, notification_id=notification_id)
     if 'error' in response:
         return Response({'error': response['error']}, status=404)
-    return Response(response, safe=False)
+    return Response(response)
 
 def items(request):
     if request.method != 'GET':

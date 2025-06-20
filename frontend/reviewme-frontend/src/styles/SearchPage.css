@@ -212,9 +212,10 @@
     gap: 5px;
     align-items: flex-start;
   }
+}
 
-  .pagination {
-    flex-direction: column;
-    gap: 15px;
-  }
+.results-not-found {
+  color: #e00;
+  font-size: 1rem;
+  padding: 0 10px;
 }

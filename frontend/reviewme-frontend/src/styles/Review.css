@@ -98,6 +98,21 @@
   color: #555;
 }
 
+.review-media {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  gap: 10px;
+}
+
 .review-media-item {
-  width: 50px;
+  width: 119px;
+  object-fit: cover;
+}
+
+@media screen and (max-width: 500px) {
+  .review-media-item {
+    width: 100px;
+  }
 }

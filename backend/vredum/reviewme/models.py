@@ -48,9 +48,9 @@ class Item(models.Model):
             'name': self.name,
             'description': self.description[:50] + '...',
             'created_at': self.created_at,
-            'added_by': self.added_by.username,
             'tags': [tag.name for tag in self.tags.all()],
             'average_rating': self.get_average_rating(),
+            'review_count': self.reviews.count(),
         }
     
     def preview(self):

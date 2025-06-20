@@ -50,8 +50,7 @@ const SearchPage = () => {
     return (
       <div className="search-page">
         <div className="search-container">
-          <h1>Search Results</h1>
-          <div className="error">Error: {error}</div>
+          <SearchPageHeader searchQuery={searchQuery} totalResults={0} />
         </div>
       </div>
     );
@@ -99,10 +98,14 @@ function SearchPageHeader({ searchQuery, totalResults = 0 }) {
         Search Results For
         {searchQuery && <span className="search-query"> "{searchQuery}"</span>}
       </span>
-      <span className="results-count">
-        {totalResults} item
-        {totalResults !== 1 ? "s" : ""}
-      </span>
+      {totalResults > 0 ? (
+        <span className="results-count">
+          {totalResults} item
+          {totalResults !== 1 ? "s" : ""}
+        </span>
+      ) : (
+        <span className="results-not-found"> No results found</span>
+      )}
     </div>
   );
 }

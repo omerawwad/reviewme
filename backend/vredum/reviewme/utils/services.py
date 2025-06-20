@@ -4,7 +4,7 @@ def get_all_reviews(page=1, page_size=10, sort_by='created_at,desc', user=None):
     """
     Fetch all reviews with pagination and sorted.
     """
-    print(user)
+    # print(user)
     sort_field, order = sort_by.split(',') if sort_by else ('created_at', 'desc')
     try:
         reviwes = Review.objects.all().order_by(f'-{sort_field}' if order == 'desc' else sort_field)
@@ -21,7 +21,7 @@ def get_all_reviews(page=1, page_size=10, sort_by='created_at,desc', user=None):
         return {'error': str(e), 'reviews': []}
     
     if user is not None:
-        print(f"User ID: {user.username}")
+        # print(f"User ID: {user.username}")
         reviwes = [review.authSerialize(user) for review in paginated_reviews]
     else:
         reviwes = [review.serialize() for review in paginated_reviews]
@@ -75,7 +75,7 @@ def search_items(query, page=1, page_size=10, sort_by='created_at,desc'):
         except Exception as e:
             return {'error': str(e), 'items': []}
         return {
-            'items': [item.serialize() for item in paginated_items],
+            'items': [item.brief() for item in paginated_items],
             'page': page,
             'page_size': page_size,
             'total_pages': paginator.num_pages,

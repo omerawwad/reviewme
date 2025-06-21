@@ -11,7 +11,7 @@ function LoginPage() {
     const form = event.target;
     const data = new FormData(form);
     loginUser({
-      username: data.get("username"),
+      email: data.get("email"),
       password: data.get("password"),
     });
     form.reset();
@@ -29,12 +29,8 @@ function LoginPage() {
       </Form.Group> */}
 
         <Form.Group className="mb-3" controlId="formBasicUsername">
-          <Form.Label>Username</Form.Label>
-          <Form.Control
-            type="text"
-            name="username"
-            placeholder="Enter username"
-          />
+          <Form.Label>Email</Form.Label>
+          <Form.Control type="email" name="email" placeholder="Enter Email" />
         </Form.Group>
 
         <Form.Group className="mb-3" controlId="formBasicPassword">

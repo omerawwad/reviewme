@@ -9,11 +9,12 @@ from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
 
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
+from rest_framework.permissions import IsAuthenticated, AllowAny, IsAdminUser
 
 
 
@@ -154,7 +155,8 @@ def get_user_answers(request, user_id):
     return Response(response)
 
 @api_view(['GET'])
-@login_required
+# @login_required
+@permission_classes([IsAuthenticated])
 def notifications(request):
     if request.method != 'GET':
         return Response({'error': 'Invalid request method'}, status=405)
@@ -170,10 +172,11 @@ def notifications(request):
 
 @api_view(['POST'])
 # @csrf_exempt
-@login_required
+# @login_required
+@permission_classes([IsAuthenticated])
 def mark_notification_as_read(request):
     if request.method != 'POST':
-        return Response({'error': 'Invalid request method'}, status=405)
+        return Response({'error': 'UNAUTHORIZED'}, status=401)
     
     user_id = auth.get_user_id(request)
     if not user_id:
@@ -190,26 +193,58 @@ def mark_notification_as_read(request):
         return Response({'error': response['error']}, status=404)
     return Response(response)
 
+
+@api_view(['GET'])
+def get_reviews_by_item(request, item_id):
+    if request.method != 'GET':
+        return Response({'error': 'Invalid request method'}, status=405)
+    
+    if item_id is None:
+        return Response({'error': 'Item ID is required'}, status=400)
+
+    page, size = request_parser.get_page_details(request.GET)
+    response = services.get_item_reviews(item_id=item_id, page=page, page_size=size)
+
+    if 'error' in response:
+        return Response({'error': response['error']}, status=404)
+    return Response(response)
+
+
+# @login_required
+def item(request):
+    if request.method == 'GET':
+        return Response({'error': 'UNAUTHORIZED'}, status=401)
+    
+    user = request.user
+    item_id = request_parser.parse_item_request(request)
+
+    if item_id is not None:
+        response = services.get_item(item_id=item_id)
+        if 'error' in response:
+            return Response({'error': response['error']}, status=404)
+        return Response(response)
+    
+@api_view(['GET'])
 def items(request):
     if request.method != 'GET':
-        return JsonResponse({'error': 'Invalid request method'}, status=405)
+        return Response({'error': 'Invalid request method'}, status=405)
     # parameters must be integers
     try:
         page = int(request.GET.get('page', 1))
         page_size = int(request.GET.get('page_size', 10))
     except ValueError:
-        return JsonResponse({'error': 'Invalid page or page_size parameter'}, status=400)
+        return Response({'error': 'Invalid page or page_size parameter'}, status=400)
    
     # parameters must be positive integers
     if page < 1 or page_size < 1:
-        return JsonResponse({'error': 'Page and page_size must be positive integers'}, status=400)
+        return Response({'error': 'Page and page_size must be positive integers'}, status=400)
 
     response, result = dbcomm.get_items(page=page, page_size=page_size)
     
     if not response:
-        return JsonResponse({'error': 'Page Does Not Exist'}, status=400)
+        return Response({'error': 'Page Does Not Exist'}, status=400)
 
-    return JsonResponse(result, safe=False)
+    return Response(result, safe=False)
 
 
 
@@ -248,57 +283,6 @@ def get_item_with_hl(request):
 
 # Private APIs ( create_item -> Create Item, update_item -> Update Item, delete_item -> Delete Item )
 
-@login_required
-def item(request):
-    # if request.method == 'GET':
-    #     return JsonResponse({'error': 'Invalid request'}, status=405)
-    
-    # Check if the user is authenticated
-    if not request.user.is_authenticated:
-        return JsonResponse({'error': 'User not authenticated'}, status=401)
-    
-    user = request.user    
-    user_id = user.id
-    
-    # Get the data from the request
-     # Get the data from the request
-    try:
-        data = json.loads(request.body)
-    except json.JSONDecodeError:
-        return JsonResponse({'error': 'Invalid JSON'}, status=400)
-    name = data.get('name')
-    description = data.get('description')
-    tags = data.getlist('tags')
-    links = data.getlist('links')
-    media = data.getlist('media')
-    
-    if request.method == 'POST':
-
-        # Validate the input
-        if not name or not user_id:
-            return JsonResponse({'error': 'Name and user_id are required'}, status=400)
-
-        # Create the item
-        item = dbcomm.create_item(name=name, user_id=user_id, description=description, tags=tags, links=links, media=media)
-        
-        if not item:
-            return JsonResponse({'error': 'Item already exists'}, status=400)
-
-        return JsonResponse(item.serialize(), safe=False)
-    
-    elif request.method == 'PUT':
-        item_id = data.get('item_id')
-        # Validate the input
-        if not item_id or not user_id:
-            return JsonResponse({'error': 'Item id and user are required'}, status=400)
-
-        # Update the item
-        item = dbcomm.update_item(item_id=int(item_id), user_id=user_id, name=name, description=description, tags=tags, links=links, media=media)
-        
-        if not item:
-            return JsonResponse({'error': 'Item does not exist'}, status=400)
-
-        return JsonResponse(item.serialize(), safe=False)
     
 
 @login_required

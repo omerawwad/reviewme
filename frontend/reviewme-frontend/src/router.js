@@ -6,6 +6,7 @@ import RegisterPage from "./pages/authPages/RegisterPage";
 import RootLayout from "./layouts/RootLayout";
 import CenterBody from "./layouts/CenterBody";
 import SearchPage from "./pages/SearchPage";
+import ItemPage from "./pages/ItemPage";
 
 const routes = createBrowserRouter([
   {
@@ -19,6 +20,7 @@ const routes = createBrowserRouter([
           { path: "/", element: <App /> },
           { path: "/search", element: <SearchPage /> },
           { path: "*", element: <NotFoundPage /> },
+          { path:"/item/:id", element: <ItemPage /> }
         ],
       },
     ],

@@ -201,3 +201,22 @@ def mark_notification_as_read(user_id, notification_id):
         return {'error': 'Notification not found'}
     except Exception as e:
         return {'error': str(e)}
+    
+
+def get_item_reviews(item_id, page=1, page_size=10, sort_by='created_at,desc'):
+    try:
+        reviews = Review.objects.filter(item_id=item_id).order_by(f'-{sort_by.split(",")[0]}' if sort_by.split(",")[1] == 'desc' else sort_by.split(",")[0])
+        paginator = Paginator(reviews, page_size)
+        try:
+            paginated_reviews = paginator.page(page)
+        except Exception as e:
+            return {'error': str(e), 'reviews': []}
+        return {
+            'reviews': [review.serialize() for review in paginated_reviews],
+            'page': page,
+            'page_size': page_size,
+            'total_pages': paginator.num_pages,
+            'total_reviews': paginator.count
+        }
+    except Exception as e:
+        return {'error': str(e), 'reviews': []}

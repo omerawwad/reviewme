@@ -1,0 +1,20 @@
+.reviews-list-skeleton {
+  display: flex;
+  flex-direction: column;
+  gap: 3rem;
+}
+
+.item-reviews-list {
+  width: 400px;
+}
+
+.reviews-list-title {
+  font-size: 1.1rem;
+  font-weight: bold;
+}
+
+@media (max-width: 900px) {
+  .item-reviews-list {
+    max-width: 3500px;
+  }
+}

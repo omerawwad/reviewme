@@ -42,3 +42,16 @@ def get_notification_id(parameters):
         except ValueError:
             return None
     return None
+
+def parse_item_request(parameters):
+    """
+    Parses item-related request parameters.
+    """
+    item_id = parameters.get('item_id')
+    if item_id is not None:
+        try:
+            item_id = int(item_id)
+            return item_id
+        except ValueError:
+            return None
+    return None

@@ -3,6 +3,11 @@ import { ButtonGroup, IconButton, Pagination } from "@chakra-ui/react";
 import { LuChevronLeft, LuChevronRight } from "react-icons/lu";
 function SimplePagination({ pageInfo, handlePageChange }) {
   // console.log("SimplePagination rendered with pageInfo:", pageInfo);
+
+  if (pageInfo.total_pages <= 1) {
+    return null;
+  }
+
   return (
     <div className="pagination-controls">
       <Pagination.Root

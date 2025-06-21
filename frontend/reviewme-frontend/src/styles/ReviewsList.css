@@ -8,6 +8,10 @@
   width: 400px;
 }
 
+.item-reviews-list {
+  width: 400px;
+}
+
 @media (max-width: 500px) {
   .reviews-list {
     max-width: 350px;

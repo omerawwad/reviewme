@@ -6,10 +6,31 @@ import { FaHeart } from "react-icons/fa";
 import { RatingGroup } from "@chakra-ui/react";
 import { Provider } from "../ui/provider";
 import { LightMode } from "../ui/color-mode";
-import { useAuth } from "../../context/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 function Review({ review }) {
+  const navigate = useNavigate();
+
   //   console.log(review);
+  const handleLikeClick = () => {
+    // Handle the like button click
+    console.log("Like button clicked for review:", review.id);
+    // Here you would typically call an API to like the review
+  };
+  const handleShareClick = () => {
+    // Handle the share button click
+    console.log("Share button clicked for review:", review.id);
+    // Here you would typically implement sharing functionality
+  };
+
+  const handleItemClick = () => {
+    // console.log("Item clicked:", review.item ? review.item.id : "No item");
+    if (review.item && review.item.id) {
+      navigate(`/item/${review.item.id}`, {
+        state: { item: review.item },
+      });
+    }
+  };
   return (
     <div className="review-card">
       <div className="review-card-header">
@@ -42,7 +63,7 @@ function Review({ review }) {
       </div>
 
       {review.item && (
-        <div className="review-item-intro">
+        <div className="review-item-intro" onClick={handleItemClick}>
           <span className="review-item-intro-text">REVIEW ON </span>
           <span className="review-item-intro-name">
             {review.item.name ? review.item.name : "Item"}

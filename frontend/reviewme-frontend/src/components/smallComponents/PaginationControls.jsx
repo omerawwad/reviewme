@@ -26,6 +26,9 @@ function PaginationControls({ pageInfo, setPage, refetch }) {
       setIsUpdated(false);
     }
   }, [isUpdated]);
+  if (pageInfo.total_pages <= 1) {
+    return null;
+  }
   return (
     <div className="pagination-controls">
       <Pagination.Root

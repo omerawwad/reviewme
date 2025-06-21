@@ -33,13 +33,13 @@ class Item(models.Model):
             'description': self.description,
             'created_at': self.created_at,
             'added_by': self.added_by.username,
-            'reviews': [review.serialize() for review in self.reviews.all()],
             'tags': [tag.name for tag in self.tags.all()],
-            'links': [link.url for link in self.links.all()],
             'media': [media.url for media in self.media.all()],
-            'questions': [question.serialize() for question in self.questions.all()],
             'review_count': self.reviews.count(),
             'average_rating': self.get_average_rating(),
+            'links': [link.url for link in self.links.all()],
+            # 'questions': [question.serialize() for question in self.questions.all()],
+            # 'reviews': [review.serialize() for review in self.reviews.all()],
         }
     
     def brief(self):

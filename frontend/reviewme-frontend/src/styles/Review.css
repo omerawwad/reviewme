@@ -9,6 +9,8 @@
 }
 
 .review-item-intro {
+  text-decoration: none;
+  cursor: pointer;
   display: flex;
   flex-direction: row;
   gap: 5px;
@@ -111,8 +113,8 @@
   object-fit: cover;
 }
 
-@media screen and (max-width: 500px) {
+@media screen and (max-width: 900px) {
   .review-media-item {
-    width: 100px;
+    width: 119px;
   }
 }
